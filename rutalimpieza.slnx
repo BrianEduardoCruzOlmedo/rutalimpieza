@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ApiAspnet/ApiAspnet.csproj" />
+  <Project Path="BlazorServer/BlazorServer.csproj" />
+</Solution>
