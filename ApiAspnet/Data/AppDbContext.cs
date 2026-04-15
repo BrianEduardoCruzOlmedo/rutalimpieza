@@ -9,7 +9,6 @@ namespace ApiAspnet.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Folio> Folios { get; set; }
-        public DbSet<Colonia> Colonias { get; set; }
         public DbSet<Folio_Detalle_Colonia> Folio_Detalles { get; set; }
         public DbSet<Despachador> Despachadores { get; set; }
         public DbSet<Chofer> Choferes { get; set; }
