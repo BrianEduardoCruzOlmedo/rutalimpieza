@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace BlazorServer.Models
+
+namespace ApiAspnet.Models
 {
-    public class Folio
+    public class DetalleDiario
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace BlazorServer.Models
+
+namespace ApiAspnet.Models
 {
     public class Tipo_Unidad
     {

@@ -1,6 +1,7 @@
 ﻿﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace BlazorServer.Model
+
+namespace ApiAspnet.Models
 {
     public class Colonia
     {

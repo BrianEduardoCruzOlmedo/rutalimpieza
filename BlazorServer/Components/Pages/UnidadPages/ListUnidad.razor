@@ -1,0 +1,98 @@
+@page "/listUnidades"
+@using BlazorServer.Models  
+@typeparam T 
+@inject UnidadService unidadService
+@inject ChoferService choferService
+@inject DetalleDiarioService detalleDiarioService
+@inject EmpleadoService empleadoService
+@inject FolioColoniaService folioColoniaService
+@inject TipoUnidadService tipoUnidadService
+@inject RutaColoniaService rutaService
+
+
+//Quiero mostrar un listado de unidades, 
+con botones para crear, editar, ver y eliminar cada unidad.
+pero quiero que el componeten sea generalizado que yo darle el tipo de dato a mostrar, y que el componente se encargue de mostrarlo en una tabla con los botones correspondientes. Type T
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Unidad unidad in listasT)
+        {
+            <tr>
+                <td>@unidad.IdUnidad</td>
+                <td>@unidad.NumeroUnidad</td>
+                <td>@unidad.IdTipo</td>
+                <td>
+                    <button type="button" class="btn btn-warning">Edit</button>
+                    <button type="button" class="btn btn-info">View</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>    
+</table>    
+
+<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true" CloseOnEscape="false">
+    <BodyTemplate>
+        I will not close if you click outside me. Don't even try to press escape key.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" >Close</Button>
+        <Button Color="ButtonColor.Primary">Understood</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true" CloseOnEscape="false">
+    <BodyTemplate>
+        I will not close if you click outside me. Don't even try to press escape key.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" >Close</Button>
+        <Button Color="ButtonColor.Primary">Understood</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true" CloseOnEscape="false">
+    <BodyTemplate>
+        I will not close if you click outside me. Don't even try to press escape key.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" >Close</Button>
+        <Button Color="ButtonColor.Primary">Understood</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true" CloseOnEscape="false">
+    <BodyTemplate>
+        I will not close if you click outside me. Don't even try to press escape key.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" >Close</Button>
+        <Button Color="ButtonColor.Primary">Understood</Button>
+    </FooterTemplate>
+</Modal>
+
+@code{
+    private Modal modal_Create = new Modal();
+    private Modal modal_Read = new Modal();
+    private Modal modal_Update = new Modal();
+    private Modal modal_Delete = new Modal();
+    private List<Unidad> listasT = new List<Unidad>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listasT = await unidadPages.GetUnidadesAsync();
+    }
+    public async Task CreateUnidad()
+    {
+        // Lógica para crear una nueva unidad
+    }
+
+}

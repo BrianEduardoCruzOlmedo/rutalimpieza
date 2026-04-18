@@ -7,12 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddBlazorBootstrap();
+
 
 builder.Services.AddScoped<DetalleDiarioService>();
 builder.Services.AddScoped<EmpleadoService>();
 builder.Services.AddScoped<RutaColoniaService>();
 builder.Services.AddScoped<TipoUnidadService>();
 builder.Services.AddScoped<UnidadService>();
+builder.Services.AddScoped<FolioColoniaService>();
+builder.Services.AddScoped<ChoferService>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:5087") });
 

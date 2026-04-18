@@ -58,7 +58,13 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 Controllers/
+ ChoferContorller.cs
  DetalleDiarioController.cs
+ EmpleadoController.cs
+ FolioColoniaController.cs
+ RutaColoniaController.cs
+ TipoUnidadController.cs
+ UnidadController.cs
  WeatherForecastController.cs
 Data/AppDbContext.cs
 Migrations/
