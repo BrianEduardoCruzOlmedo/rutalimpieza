@@ -6,27 +6,32 @@ namespace ApiAspnet.Models
     public class DetalleDiario
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id_Folio { get; set; } // Serial automático
+        public int ID { get; set; } 
 
         public DateTime Fecha_orden { get; set; }
-        public DateTime Fecha_captura { get; set; } 
-        
-        public int Turno { get; set; }
-        
-        public int id_ruta { get; set; }
-        public int id_despachador { get; set; }
-        public int id_chofer { get; set; }
-        public int id_tipo_unidad { get; set; }
-        public int id_unidadcantidad { get; set; }
+        public DateTime Fecha_Inicio { get; set; }
+        public DateTime Fecha_TerminoEstimado { get; set; }
+        public DateTime Fecha_TerminoReal { get; set; }
 
-        public decimal puches { get; set; }
-        public decimal km_salir { get; set; }
-        public decimal km_regreso { get; set; }
+        
+        public int ID_Unidad { get; set; }
+
+
+        [ForeignKey("ID_Unidad")]
+        public Unidad? Unidad { get; set; }
+        public int ID_Ruta { get; set; }
+
+        [ForeignKey(nameof(ID_Ruta))]
+        public Ruta? Ruta { get; set; }
+        public ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
+
+
+        public decimal km_Recorridos { get; set; }
         
         public decimal Diesel_inicio { get; set; }
+        public decimal Diesel_Recargado { get; set; }
         public decimal Diesel_Final { get; set; }
-        public decimal Diesel_cargado { get; set; }
-        public decimal Diesel_unidad { get; set; }
+        public decimal CapacidadDiesel { get; set; }
+        public decimal Autonomia { get; set; }
     }
 }

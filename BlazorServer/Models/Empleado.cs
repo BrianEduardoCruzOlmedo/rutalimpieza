@@ -1,9 +1,14 @@
-﻿namespace BlazorServer.Models
+﻿﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlazorServer.Models
 {
-    public class Empleado
+    public class Empleado 
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
+        public bool isChofer { get; set; }
+
         public string Nombre { get; set; }
-        public string Tipo { get; set; } = string.Empty;
+        
     }
 }

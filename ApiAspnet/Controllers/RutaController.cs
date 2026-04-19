@@ -1,30 +1,30 @@
+﻿using ApiAspnet.Data;
+using ApiAspnet.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ApiAspnet.Data;
-using ApiAspnet.Models;
 
 namespace ApiAspnet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TipoUnidadController : ControllerBase
+    public class RutaController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public TipoUnidadController(AppDbContext context) => _context = context;
+        public RutaController(AppDbContext context) => _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tipo_Unidad>>> GetAll() => await _context.Tipos_Unidades.ToListAsync();
+        public async Task<ActionResult<IEnumerable<Ruta>>> Get()
+            => await _context.Rutas.Include(r => r.CoberturaColonias).ToListAsync();
 
         [HttpPost]
-        public async Task<ActionResult<Tipo_Unidad>> Create(Tipo_Unidad tipo)
+        public async Task<ActionResult<Ruta>> Create(Ruta ruta)
         {
-            _context.Tipos_Unidades.Add(tipo);
+            _context.Rutas.Add(ruta);
             await _context.SaveChangesAsync();
-            return Ok(tipo);
+            return Ok(ruta);
         }
-
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Tipo_Unidad tipo)
+        public async Task<IActionResult> Update(int id, Ruta tipo)
         {
             if (id != tipo.ID) return BadRequest();
             _context.Entry(tipo).State = EntityState.Modified;
@@ -35,11 +35,12 @@ namespace ApiAspnet.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var tipo = await _context.Tipos_Unidades.FindAsync(id);
+            var tipo = await _context.Rutas.FindAsync(id);
             if (tipo == null) return NotFound();
-            _context.Tipos_Unidades.Remove(tipo);
+            _context.Rutas.Remove(tipo);
             await _context.SaveChangesAsync();
             return Ok();
         }
+
     }
 }

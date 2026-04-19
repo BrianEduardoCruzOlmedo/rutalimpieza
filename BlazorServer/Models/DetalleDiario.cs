@@ -1,33 +1,35 @@
-﻿namespace BlazorServer.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlazorServer.Models
 {
     public class DetalleDiario
     {
-        public int IdFolio { get; set; }
-        public DateTime FechaOrden { get; set; }
-        public string Turno { get; set; }
+        
+        public int ID { get; set; } 
+
+        public DateTime Fecha_orden { get; set; }
+        public DateTime Fecha_Inicio { get; set; }
+        public DateTime Fecha_TerminoEstimado { get; set; }
+        public DateTime Fecha_TerminoReal { get; set; }
+
+        
+        public int ID_Unidad { get; set; }
 
 
-        public int IdDespachador { get; set; }
-        public int IdChofer { get; set; }
-        public int IdTipoUnidad { get; set; }
-        public int IdUnidad { get; set; }
-        public int IdRuta { get; set; }
+        public Unidad? Unidad { get; set; }
+        public int ID_Ruta { get; set; }
 
-        public double KmSalir { get; set; }
-        public double KmEntrar { get; set; }
-        public string Comentarios { get; set; }
-        public bool RutaTerminada { get; set; }
-
-        public double TotalKm => KmEntrar - KmSalir;
+        public Ruta? Ruta { get; set; }
+        public ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 
 
-        public double CalcularEfectividad(List<RutaColonia> coloniasDeLaRuta)
-        {
-            if (coloniasDeLaRuta == null || coloniasDeLaRuta.Count == 0) return 0;
-
-            double sumaEsperada = coloniasDeLaRuta.Count * 100;
-            // Aquí iría la lógica de cuántas colonias se completaron realmente
-            return sumaEsperada;
-        }
+        public decimal km_Recorridos { get; set; }
+        
+        public decimal Diesel_inicio { get; set; }
+        public decimal Diesel_Recargado { get; set; }
+        public decimal Diesel_Final { get; set; }
+        public decimal CapacidadDiesel { get; set; }
+        public decimal Autonomia { get; set; }
     }
 }

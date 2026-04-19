@@ -4,33 +4,54 @@
 
 <h3>Historial de Rutas y Diésel (Folios)</h3>
 
-<TablaCrudGenerica 
-    TItem="DetalleDiario" 
-    Items="listaDetalles" 
-    OnCreate="AbrirModalCrear" 
-    OnEdit="AbrirModalEditar" 
-    OnView="AbrirModalVer" 
-    OnDelete="AbrirModalEliminar">
+<TablaCrudGenerica TItem="DetalleDiario"
+                   Items="listaDetalles"
+                   OnCreate="AbrirModalCrear"
+                   OnEdit="AbrirModalEditar"
+                   OnView="AbrirModalVer"
+                   OnDelete="AbrirModalEliminar">
     
     <Cabecera>
         <th>Folio</th>
-        <th>Fecha Orden</th>
-        <th>Turno</th>
-        <th>Diésel Cargado</th>
-        <th>Km Salida</th>
-        <th>Km Regreso</th>
+        <th>Fecha</th>
+        <th>Unidad</th>
+        <th>Km Recorridos</th>
+        <th>Diesel Recargado</th>
+        <th>Diesel Final</th>
+        <th>Autonomía</th>
+        <th>% Cobertura Colonias</th>
     </Cabecera>
     
     <Filas Context="detalle">
-        <td>@detalle.Id_Folio</td>
+        <td>@detalle.ID</td>
         <td>@detalle.Fecha_orden.ToString("dd/MM/yyyy")</td>
-        <td>@detalle.Turno</td>
-        <td>@detalle.Diesel_cargado L</td>
-        <td>@detalle.km_salir</td>
-        <td>@detalle.km_regreso</td>
+        <td>@detalle.Unidad?.Nombre</td>
+        <td>@detalle.km_Recorridos</td>
+        <td>@detalle.Diesel_Recargado L</td>
+        <td>@detalle.Diesel_Final L</td>
+        <td>@detalle.Autonomia</td>
+        <td>
+            @* Cálculo simple: (Colonias recorridas / Total colonias) * 100 *@
+            @if (detalle.Ruta != null && detalle.Ruta.CoberturaColonias.Any())
+            {
+                
+                    var Detalle = detalle.Ruta.CoberturaColonias;
+                    var avance = Detalle.Average(c => c.HabitantesAtendidos / c.Colonia.Habitantes);
+                
+                <div class="progress" style="width: 100px; height: 20px;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width: @( avance)%">
+                        @(avance)%
+                    </div>
+                </div>
+            }
+            else
+            {
+                <span>0%</span>
+            }
+        </td>
     </Filas>
 </TablaCrudGenerica>
-
 @code {
     private Modal modal_Create = new Modal();
     private Modal modal_Read = new Modal();
@@ -42,7 +63,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaDetalles = await detalleService.GetDetallesAsync(); 
+        listaDetalles = (await DetalleDiarioService.GetFolios()) ?? new();
     }
 
     public async Task AbrirModalCrear()

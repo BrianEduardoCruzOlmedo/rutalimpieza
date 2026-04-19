@@ -15,10 +15,12 @@
     <Cabecera>
         <th>id_despachador</th>
         <th>Nombre</th>
+        <th>Es Chofer</th>
     </Cabecera>
-    <Filas Context="Despachador">
-        <td>@Despachador.id_despachador</td> 
-        <td>@Despachador.Nombre</td>
+    <Filas Context="Empleado">
+        <td>@Empleado.ID</td>
+        <td>@Empleado.Nombre</td>
+        <td>@(Empleado.isChofer ? "Si": "No")</td>
     </Filas>
 </TablaCrudGenerica>
 
@@ -33,7 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaEmpleados = await empleadoService.GetEmpleadosAsync(); 
+        listaEmpleados = await empleadoService.GetEmpleados() ?? new(); 
     }
 
     public async Task AbrirModalCrear()

@@ -3,18 +3,19 @@ using BlazorServer.Models;
 
 namespace BlazorServer.Services
 {
-    public class RutaColoniaService
+    public class RutaService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _http;
 
-        public RutaColoniaService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        public RutaService(HttpClient http) => _http = http;
 
-        public async Task<List<RutaColonia>> GetRutasColoniaAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<List<RutaColonia>>("api/RutaColonia") ?? new List<RutaColonia>();
-        }
+        public async Task<List<Ruta>?> GetRutas()
+            => await _http.GetFromJsonAsync<List<Ruta>>("api/Ruta");
+
+        public async Task Create(Ruta ruta) => await _http.PostAsJsonAsync("api/Ruta", ruta);
+
+        public async Task Update(int id, Ruta ruta) => await _http.PutAsJsonAsync($"api/Ruta/{id}", ruta);
+
+        public async Task Delete(int id) => await _http.DeleteAsync($"api/Ruta/{id}");
     }
 }

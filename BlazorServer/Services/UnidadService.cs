@@ -2,34 +2,40 @@
 
 namespace BlazorServer.Services
 {
-    public class UnidadService
-    {
-        
-        private readonly HttpClient _httpClient;
+   
 
-        public UnidadService(HttpClient httpClient)
+        public class UnidadService
         {
-            _httpClient = httpClient;
-        }
+            private readonly HttpClient _http;
 
+            public UnidadService(HttpClient http) => _http = http;
 
-        public async Task<List<Unidad>> GetUnidadesAsync()
-        {
-            return await _httpClient.GetFromJsonAsync<List<Unidad>>("api/Unidad") ?? new List<Unidad>();
+            public async Task<List<Unidad>?> GetUnidades()
+                => await _http.GetFromJsonAsync<List<Unidad>>("api/Unidad");
+
+            public async Task<Unidad?> GetById(int id)
+                => await _http.GetFromJsonAsync<Unidad>($"api/Unidad/Read/{id}");
+
+            public async Task<List<Unidad>?> GetDisponibles(DateTime inicio, DateTime fin)
+            {
+                // Usamos QueryStrings para pasar fechas
+                return await _http.GetFromJsonAsync<List<Unidad>>($"api/Unidad/Disponibles?inicio={inicio:s}&fin={fin:s}");
+            }
+
+            public async Task Create(Unidad unidad)
+            {
+                await _http.PostAsJsonAsync("api/Unidad/Create", unidad);
+            }
+
+            public async Task Update(int id, Unidad unidad)
+            {
+                await _http.PutAsJsonAsync($"api/Unidad/Update/{id}", unidad);
+            }
+
+            public async Task Delete(int id)
+            {
+                await _http.DeleteAsync($"api/Unidad/Delete/{id}");
+            }
         }
-        public async Task<Unidad?> GetUnidadByIdAsync(int id)
-        {
-            return await _httpClient.GetFromJsonAsync<Unidad>($"api/Unidad/{id}");
-        }
-        public async Task CreateUnidadAsync(Unidad unidad)
-        {
-            await _httpClient.PostAsJsonAsync("api/Unidad", unidad);
-        }
-        public async Task UpdateUnidadAsync(Unidad unidad){
-            await _httpClient.PutAsJsonAsync($"api/Unidad/{unidad.IdUnidad}", unidad);
-        }
-        public async Task DeleteUnidadAsync(int id){
-            await _httpClient.DeleteAsync($"api/Unidad/{id}");
-        }   
-    }
+    
 }

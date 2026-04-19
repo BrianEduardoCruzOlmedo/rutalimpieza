@@ -1,61 +1,63 @@
 @page "/listTiposUnidad"
-@using BlazorServer.Models  
+@using BlazorServer.Models
 @inject TipoUnidadService TipoUnidadService
 
 <h3>Catálogo de Tipos de Unidad</h3>
 
-<TablaCrudGenerica 
-    TItem="TipoUnidad" 
-    Items="listaTipos" 
-    OnCreate="AbrirModalCrear" 
-    OnEdit="AbrirModalEditar" 
-    OnView="AbrirModalVer" 
-    OnDelete="AbrirModalEliminar">
+<TablaCrudGenerica TItem="Tipo_Unidad"
+                   Items="listaTipos"
+                   OnCreate="AbrirModalCrear"
+                   OnEdit="AbrirModalEditar"
+                   OnView="AbrirModalVer"
+                   OnDelete="AbrirModalEliminar">
     
     <Cabecera>
         <th>Id</th>
-        <th>Nombre del Tipo (Ej. Camión, Camioneta)</th>
+        <th>Nombre</th>
+        <th>Lts Tanque</th>
     </Cabecera>
     
     <Filas Context="tipo">
-        <td>@tipo.id_tipo_unidad</td>
-        <td>@tipo.Nombre_Tipo</td>
+        <td>@tipo.ID</td>
+        <td>@tipo.Nombre</td>
+        <td>@tipo.LtrsDieselTanque</td>
     </Filas>
 </TablaCrudGenerica>
 
 @code {
-    private Modal modal_Create = new Modal();
-    private Modal modal_Read = new Modal();
-    private Modal modal_Update = new Modal();
-    private Modal modal_Delete = new Modal();
+    private Modal modal_Create = new();
+    private Modal modal_Read = new();
+    private Modal modal_Update = new();
+    private Modal modal_Delete = new();
     
-    private List<TipoUnidad> listaTipos = new List<TipoUnidad>();
-    private TipoUnidad? tipoSeleccionado;
+    private List<Tipo_Unidad> listaTipos = new();
+    private Tipo_Unidad? tipoSeleccionado;
 
     protected override async Task OnInitializedAsync()
     {
-        listaTipos = await tipoUnidadService.GetTiposAsync(); 
+        // Se cambió a GetTipos() para coincidir con tu servicio
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
     }
 
     public async Task AbrirModalCrear()
     {
-        tipoSeleccionado = new TipoUnidad();
+        tipoSeleccionado = new Tipo_Unidad();
         await modal_Create.ShowAsync();
     }
 
-    public async Task AbrirModalEditar(TipoUnidad tipo)
+    public async Task AbrirModalEditar(Tipo_Unidad tipo)
     {
         tipoSeleccionado = tipo;
         await modal_Update.ShowAsync();
     }
 
-    public async Task AbrirModalVer(TipoUnidad tipo)
+    public async Task AbrirModalVer(Tipo_Unidad tipo)
     {
         tipoSeleccionado = tipo;
         await modal_Read.ShowAsync();
     }
 
-    public async Task AbrirModalEliminar(TipoUnidad tipo)
+    public async Task AbrirModalEliminar(Tipo_Unidad tipo)
     {
         tipoSeleccionado = tipo;
         await modal_Delete.ShowAsync();

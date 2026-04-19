@@ -1,9 +1,14 @@
-﻿namespace BlazorServer.Models
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlazorServer.Models
 {
     public class Unidad
     {
-        public int IdUnidad { get; set; }
-        public string NumeroUnidad { get; set; }
-        public int IdTipo { get; set; }
+        public int Id { get; set; }
+        public string Nombre{ get; set; } 
+
+        public int ID_TipoUnidad{ get; set; }
+        public Tipo_Unidad? TipoUnidad { get; set; }
     }
 }

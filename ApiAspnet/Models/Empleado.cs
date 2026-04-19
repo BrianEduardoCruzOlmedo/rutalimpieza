@@ -3,14 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApiAspnet.Models
 {
-    public class Empleado // <-- Cambiamos Despachador por Empleado
+    public class Empleado 
     {
         [Key]
-        public int id_empleado { get; set; } // <-- Unificamos el ID
+        public int ID { get; set; }
+        public bool isChofer { get; set; }
+
+        public string Nombre { get; set; }
         
-        public string Nombre { get; set; } = string.Empty;
-        
-        // Es buena idea tener este campo para distinguir en el futuro
-        public string Tipo { get; set; } = string.Empty; 
     }
 }

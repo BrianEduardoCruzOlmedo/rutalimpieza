@@ -6,12 +6,11 @@ namespace ApiAspnet.Models
     public class Unidad
     {
         [Key]
-        public int id_unidad { get; set; }
-        public string Nombre_Unidad { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public string Nombre{ get; set; } 
 
-        public int id_tipo_unidad { get; set; } 
-        
-        [ForeignKey("id_tipo_unidad")]
-        public Tipo_Unidad? TipoUnidadInfo { get; set; }
+        public int ID_TipoUnidad{ get; set; }
+        [ForeignKey("ID_TipoUnidad")]
+        public Tipo_Unidad? TipoUnidad { get; set; }
     }
 }
