@@ -68,8 +68,8 @@ Controllers/
  WeatherForecastController.cs
 Data/AppDbContext.cs
 Migrations/
- 20260415230429_Prueba1.cs
- 20260415230429_Prueba1.Designer.cs
+ 20260418224633_Prueba3.cs
+ 20260418224633_Prueba3.Designer.cs
  AppDbContextModelSnapshot.cs
 Models/
  Chofer.cs

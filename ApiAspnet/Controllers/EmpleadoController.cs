@@ -13,7 +13,7 @@ namespace ApiAspnet.Controllers
         public EmpleadoController(AppDbContext context) => _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Despachador>>> GetEmpleados() 
-            => await _context.Despachadores.ToListAsync();
+        public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleados() 
+            => await _context.Empleados.ToListAsync();
     }
 }

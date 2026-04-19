@@ -1,0 +1,62 @@
+@page "/listEmpleados"
+@using BlazorServer.Models  
+@inject EmpleadoService empleadoService 
+
+<h3>Gestión de Personal (Despachadores)</h3>
+
+<TablaCrudGenerica 
+    TItem="Empleado" 
+    Items="listaEmpleados" 
+    OnCreate="@AbrirModalCrear" 
+    OnEdit="@AbrirModalEditar" 
+    OnView="@AbrirModalVer" 
+    OnDelete="@AbrirModalEliminar">
+
+    <Cabecera>
+        <th>id_despachador</th>
+        <th>Nombre</th>
+    </Cabecera>
+    <Filas Context="Despachador">
+        <td>@Despachador.id_despachador</td> 
+        <td>@Despachador.Nombre</td>
+    </Filas>
+</TablaCrudGenerica>
+
+@code {
+    private Modal modal_Create = new Modal();
+    private Modal modal_Read = new Modal();
+    private Modal modal_Update = new Modal();
+    private Modal modal_Delete = new Modal();
+    
+    private List<Empleado> listaEmpleados = new List<Empleado>();
+    private Empleado? empleadoSeleccionado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaEmpleados = await empleadoService.GetEmpleadosAsync(); 
+    }
+
+    public async Task AbrirModalCrear()
+    {
+        empleadoSeleccionado = new Empleado();
+        await modal_Create.ShowAsync();
+    }
+
+    public async Task AbrirModalEditar(Empleado empleado)
+    {
+        empleadoSeleccionado = empleado;
+        await modal_Update.ShowAsync();
+    }
+
+    public async Task AbrirModalVer(Empleado empleado)
+    {
+        empleadoSeleccionado = empleado;
+        await modal_Read.ShowAsync();
+    }
+
+    public async Task AbrirModalEliminar(Empleado empleado)
+    {
+        empleadoSeleccionado = empleado;
+        await modal_Delete.ShowAsync();
+    }
+}

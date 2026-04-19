@@ -1,0 +1,71 @@
+@page "/listDetallesDiarios"
+@using BlazorServer.Models  
+@inject DetalleDiarioService DetalleDiarioService
+
+<h3>Historial de Rutas y Diésel (Folios)</h3>
+
+<TablaCrudGenerica 
+    TItem="DetalleDiario" 
+    Items="listaDetalles" 
+    OnCreate="AbrirModalCrear" 
+    OnEdit="AbrirModalEditar" 
+    OnView="AbrirModalVer" 
+    OnDelete="AbrirModalEliminar">
+    
+    <Cabecera>
+        <th>Folio</th>
+        <th>Fecha Orden</th>
+        <th>Turno</th>
+        <th>Diésel Cargado</th>
+        <th>Km Salida</th>
+        <th>Km Regreso</th>
+    </Cabecera>
+    
+    <Filas Context="detalle">
+        <td>@detalle.Id_Folio</td>
+        <td>@detalle.Fecha_orden.ToString("dd/MM/yyyy")</td>
+        <td>@detalle.Turno</td>
+        <td>@detalle.Diesel_cargado L</td>
+        <td>@detalle.km_salir</td>
+        <td>@detalle.km_regreso</td>
+    </Filas>
+</TablaCrudGenerica>
+
+@code {
+    private Modal modal_Create = new Modal();
+    private Modal modal_Read = new Modal();
+    private Modal modal_Update = new Modal();
+    private Modal modal_Delete = new Modal();
+    
+    private List<DetalleDiario> listaDetalles = new List<DetalleDiario>();
+    private DetalleDiario? detalleSeleccionado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaDetalles = await detalleService.GetDetallesAsync(); 
+    }
+
+    public async Task AbrirModalCrear()
+    {
+        detalleSeleccionado = new DetalleDiario();
+        await modal_Create.ShowAsync();
+    }
+
+    public async Task AbrirModalEditar(DetalleDiario detalle)
+    {
+        detalleSeleccionado = detalle;
+        await modal_Update.ShowAsync();
+    }
+
+    public async Task AbrirModalVer(DetalleDiario detalle)
+    {
+        detalleSeleccionado = detalle;
+        await modal_Read.ShowAsync();
+    }
+
+    public async Task AbrirModalEliminar(DetalleDiario detalle)
+    {
+        detalleSeleccionado = detalle;
+        await modal_Delete.ShowAsync();
+    }
+}

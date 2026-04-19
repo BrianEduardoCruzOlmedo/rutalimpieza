@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiAspnet.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260415230429_Prueba1")]
-    partial class Prueba1
+    [Migration("20260418224633_Prueba3")]
+    partial class Prueba3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace ApiAspnet.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.6");
 
-            modelBuilder.Entity("BlazorServer.Models.Chofer", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Chofer", b =>
                 {
                     b.Property<int>("id_chofer")
                         .ValueGeneratedOnAdd()
@@ -35,7 +35,7 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Choferes");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Colonia", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Colonia", b =>
                 {
                     b.Property<int>("id_colonia")
                         .ValueGeneratedOnAdd()
@@ -56,22 +56,7 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Colonias");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Despachador", b =>
-                {
-                    b.Property<int>("id_despachador")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("id_despachador");
-
-                    b.ToTable("Despachadores");
-                });
-
-            modelBuilder.Entity("BlazorServer.Models.Folio", b =>
+            modelBuilder.Entity("ApiAspnet.Models.DetalleDiario", b =>
                 {
                     b.Property<int>("Id_Folio")
                         .ValueGeneratedOnAdd()
@@ -127,7 +112,26 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Folios");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Folio_Detalle_Colonia", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Empleado", b =>
+                {
+                    b.Property<int>("id_empleado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("id_empleado");
+
+                    b.ToTable("Empleados");
+                });
+
+            modelBuilder.Entity("ApiAspnet.Models.Folio_Detalle_Colonia", b =>
                 {
                     b.Property<int>("id_detalle")
                         .ValueGeneratedOnAdd()
@@ -150,7 +154,7 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Folio_Detalles");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Tipo_Unidad", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Tipo_Unidad", b =>
                 {
                     b.Property<int>("id_tipo_unidad")
                         .ValueGeneratedOnAdd()
@@ -165,7 +169,7 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Tipos_Unidades");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Unidad", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Unidad", b =>
                 {
                     b.Property<int>("id_unidad")
                         .ValueGeneratedOnAdd()
@@ -185,9 +189,9 @@ namespace ApiAspnet.Migrations
                     b.ToTable("Unidades");
                 });
 
-            modelBuilder.Entity("BlazorServer.Models.Unidad", b =>
+            modelBuilder.Entity("ApiAspnet.Models.Unidad", b =>
                 {
-                    b.HasOne("BlazorServer.Models.Tipo_Unidad", "TipoUnidadInfo")
+                    b.HasOne("ApiAspnet.Models.Tipo_Unidad", "TipoUnidadInfo")
                         .WithMany()
                         .HasForeignKey("id_tipo_unidad")
                         .OnDelete(DeleteBehavior.Cascade)

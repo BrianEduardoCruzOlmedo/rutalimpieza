@@ -1,0 +1,63 @@
+@page "/listTiposUnidad"
+@using BlazorServer.Models  
+@inject TipoUnidadService TipoUnidadService
+
+<h3>Catálogo de Tipos de Unidad</h3>
+
+<TablaCrudGenerica 
+    TItem="TipoUnidad" 
+    Items="listaTipos" 
+    OnCreate="AbrirModalCrear" 
+    OnEdit="AbrirModalEditar" 
+    OnView="AbrirModalVer" 
+    OnDelete="AbrirModalEliminar">
+    
+    <Cabecera>
+        <th>Id</th>
+        <th>Nombre del Tipo (Ej. Camión, Camioneta)</th>
+    </Cabecera>
+    
+    <Filas Context="tipo">
+        <td>@tipo.id_tipo_unidad</td>
+        <td>@tipo.Nombre_Tipo</td>
+    </Filas>
+</TablaCrudGenerica>
+
+@code {
+    private Modal modal_Create = new Modal();
+    private Modal modal_Read = new Modal();
+    private Modal modal_Update = new Modal();
+    private Modal modal_Delete = new Modal();
+    
+    private List<TipoUnidad> listaTipos = new List<TipoUnidad>();
+    private TipoUnidad? tipoSeleccionado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaTipos = await tipoUnidadService.GetTiposAsync(); 
+    }
+
+    public async Task AbrirModalCrear()
+    {
+        tipoSeleccionado = new TipoUnidad();
+        await modal_Create.ShowAsync();
+    }
+
+    public async Task AbrirModalEditar(TipoUnidad tipo)
+    {
+        tipoSeleccionado = tipo;
+        await modal_Update.ShowAsync();
+    }
+
+    public async Task AbrirModalVer(TipoUnidad tipo)
+    {
+        tipoSeleccionado = tipo;
+        await modal_Read.ShowAsync();
+    }
+
+    public async Task AbrirModalEliminar(TipoUnidad tipo)
+    {
+        tipoSeleccionado = tipo;
+        await modal_Delete.ShowAsync();
+    }
+}

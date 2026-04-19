@@ -429,7 +429,12 @@ Components/
   Counter.razor
   Error.razor
   Home.razor
-  UnidadPages/ListUnidad.razor
+  UnidadPages/
+   ListDetallesDiarios.razor
+   ListEmpleados.razor
+   ListTiposUnidad.razor
+   ListUnidad.razor
+   TablaCrudGenerica.razor
   Weather.razor
  Routes.razor
  _Imports.razor
@@ -444,7 +449,12 @@ Components/
   Counter.razor
   Error.razor
   Home.razor
-  UnidadPages/ListUnidad.razor
+  UnidadPages/
+   ListDetallesDiarios.razor
+   ListEmpleados.razor
+   ListTiposUnidad.razor
+   ListUnidad.razor
+   TablaCrudGenerica.razor
   Weather.razor
  Routes.razor
  _Imports.razor

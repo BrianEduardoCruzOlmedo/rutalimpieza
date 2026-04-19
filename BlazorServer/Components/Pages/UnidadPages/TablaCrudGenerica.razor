@@ -1,0 +1,64 @@
+@typeparam TItem
+
+<div class="mb-3">
+    <button type="button" class="btn btn-success" @onclick="OnCreate">
+        Crear Nuevo
+    </button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            @if (Cabecera != null)
+            {
+                @Cabecera
+            }
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Items != null)
+        {
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @if (Filas != null)
+                    {
+                        @Filas(item)
+                    }
+                    <td>
+                        <button type="button" class="btn btn-warning" @onclick="() => OnEdit.InvokeAsync(item)">Edit</button>
+                        <button type="button" class="btn btn-info" @onclick="() => OnView.InvokeAsync(item)">View</button>
+                        <button type="button" class="btn btn-danger" @onclick="() => OnDelete.InvokeAsync(item)">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>    
+</table>
+
+@code {
+    // 1. La lista de datos a mostrar
+    [Parameter] 
+    public List<TItem> Items { get; set; } = new();
+
+    // 2. Fragmentos de HTML para inyectar desde el padre
+    [Parameter] 
+    public RenderFragment? Cabecera { get; set; }
+
+    [Parameter] 
+    public RenderFragment<TItem>? Filas { get; set; }
+
+    // 3. Eventos de los botones
+    [Parameter] 
+    public EventCallback OnCreate { get; set; }
+
+    [Parameter] 
+    public EventCallback<TItem> OnEdit { get; set; }
+
+    [Parameter] 
+    public EventCallback<TItem> OnView { get; set; }
+
+    [Parameter] 
+    public EventCallback<TItem> OnDelete { get; set; }
+}

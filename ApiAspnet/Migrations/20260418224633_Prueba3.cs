@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ApiAspnet.Migrations
 {
     /// <inheritdoc />
-    public partial class Prueba1 : Migration
+    public partial class Prueba3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,16 +40,17 @@ namespace ApiAspnet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Despachadores",
+                name: "Empleados",
                 columns: table => new
                 {
-                    id_despachador = table.Column<int>(type: "INTEGER", nullable: false)
+                    id_empleado = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Nombre = table.Column<string>(type: "TEXT", nullable: false)
+                    Nombre = table.Column<string>(type: "TEXT", nullable: false),
+                    Tipo = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Despachadores", x => x.id_despachador);
+                    table.PrimaryKey("PK_Empleados", x => x.id_empleado);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,7 +145,7 @@ namespace ApiAspnet.Migrations
                 name: "Colonias");
 
             migrationBuilder.DropTable(
-                name: "Despachadores");
+                name: "Empleados");
 
             migrationBuilder.DropTable(
                 name: "Folio_Detalles");
