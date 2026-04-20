@@ -1,5 +1,6 @@
 ﻿@page "/"
 @page "/dashboard"
+@implements IDisposable
 @using BlazorServer.Models
 @inject DetalleDiarioService detalleService
 @inject EmpleadoService empleadoService
@@ -59,7 +60,8 @@ else
                     <h5 class="mb-0">Últimos 5 Folios Registrados</h5>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped table-hover mb-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0 dashboard-table">
                         <thead class="table-light">
                             <tr>
                                 <th>Folio</th>
@@ -90,24 +92,23 @@ else
                                 @foreach (var folio in ultimosFolios)
                                 {
                                     <tr>
-                                        <td><strong>#@folio.ID_Ruta</strong></td>
+                                        <td><strong>#@folio.ID</strong></td>
                                         <td>@folio.Fecha_orden.ToString("dd/MM/yyyy")</td>
                                         <td>@folio.Fecha_Inicio.ToString("dd/MM/yyyy HH:mm")</td>
                                         <td>@folio.Fecha_TerminoEstimado.ToString("dd/MM/yyyy")</td>
                                         <td>@folio.Fecha_TerminoReal.ToString("dd/MM/yyyy HH:mm")</td>
 
                                         <td>@folio.ID_Unidad</td>
-                                        <td>@folio.Unidad</td>
+                                        <td>@folio.Unidad?.Nombre</td>
 
-  
                                         <td>@folio.ID_Ruta</td>
-                                        <td>@folio.Ruta</td>
-                                        <td>@folio.Empleados</td>
+                                        <td>@folio.Ruta?.Nombre</td>
+                                        <td>@(folio.Empleados != null ? string.Join(", ", folio.Empleados.Select(e => e.Nombre)) : string.Empty)</td>
 
                                         <td>@folio.km_Recorridos</td>
                                         <td>@folio.Diesel_inicio</td>
                                         <td>@folio.Diesel_Recargado</td>
-     
+
                                         <td>@folio.Diesel_Final</td>
                                         <td>@folio.CapacidadDiesel</td>
                                         <td>@folio.Autonomia</td>
@@ -121,7 +122,8 @@ else
                                 </tr>
                             }
                         </tbody>
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,6 +140,22 @@ else
     
     // Lista para la tabla resumen
     private List<DetalleDiario> ultimosFolios = new();
+
+    protected override void OnInitialized()
+    {
+        // Suscribirse a cambios en folios para refrescar el dashboard automáticamente
+        detalleService.OnChange += OnFoliosChanged;
+    }
+
+    private async void OnFoliosChanged()
+    {
+        await InvokeAsync(async () => await CargarDatos());
+    }
+
+    public void Dispose()
+    {
+        detalleService.OnChange -= OnFoliosChanged;
+    }
 
     protected override async Task OnInitializedAsync()
     {

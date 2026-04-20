@@ -5,6 +5,7 @@
 @inject UnidadService unidadService
 @inject RutaService rutaService
 @inject EmpleadoService empleadoService
+@inject TipoUnidadService TipoUnidadService
 
 <h3>Historial de Rutas y Diésel (Folios)</h3>
 
@@ -82,20 +83,31 @@
                             <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_TerminoReal" min="@detalleSeleccionado.Fecha_Inicio.ToString("yyyy-MM-dd ")" />
                         </div>
                         <div>
+                            <label class="form-label">Escoja Tipo de Unidad</label>
+                            <InputSelect class="form-select mb-2" @bind-Value="SelectedTipoId" @onchange="@(async _ => await GetDisponibles())">
+                                <option value="0">-- Seleccione un tipo --</option>
+                                @if (listaTipos != null)
+                                {
+                                    @foreach (var t in listaTipos)
+                                    {
+                                        <option value="@t.ID">@t.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
+
                             <label class="form-label">Escoja Unidad</label>
                             <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Unidad">
-                                <option value="">-- Seleccione una Unidad --</option>
-                                
-                                    @foreach (var unidad in listaUnidadesDisponibles)
-                                    { 
-                                        <option value="@unidad.Id">Nombre:@unidad.Nombre; Tipo:@unidad.TipoUnidad</option>
-                                    }
+                                <option value="0">-- Seleccione una Unidad --</option>
+                                @foreach (var unidad in listaUnidadesDisponibles)
+                                {
+                                    <option value="@unidad.Id">@unidad.Nombre (Tipo: @unidad.TipoUnidad?.Nombre)</option>
+                                }
                             </InputSelect>
                         </div>
                         <div>
                             <label class="form-label">Escoja Ruta</label>
                             <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Ruta">
-                                <option value="">-- Seleccione una Ruta --</option>
+                                <option value="0">-- Seleccione una Ruta --</option>
                                 
                                 @foreach (var ruta in Rutas)
                                 {
@@ -141,7 +153,7 @@
                     <div class="mb-3">
                         <label class="form-text">Numero de turno</label>
                         <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.NumeroTurno">
-                            <option value="">-- Seleccione un turno --</option>
+                            <option value="0">-- Seleccione un turno --</option>
                             <option value="1">Turno 1</option>
                             <option value="2">Turno 2</option>
                             <option value="3">Turno 3</option>
@@ -157,15 +169,15 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-text">Kilómetros Recorridos</label>
-                        <label class="form-control mb-2">@(detalleSeleccionado.Ruta!.KM_Estimados)</label>
+                        <label class="form-control mb-2">@(detalleSeleccionado.Ruta?.KM_Estimados ?? 0)</label>
                     </div>
                     <div class="mb-3">
                         <label class="form-text">Habitantes Atendidos</label>
-                        <label class="form-control mb-2" >@detalleSeleccionado.Ruta!.CoberturaColonias.Sum(c => c.Colonia.Habitantes)</label>
+                        <label class="form-control mb-2" >@((detalleSeleccionado.Ruta?.CoberturaColonias?.Sum(c => c.Colonia.Habitantes)) ?? 0)</label>
                     </div>
                     <div>
                         <label class="form-text">Colonias Atendidas</label>
-                        <label class="form-control mb-2">@detalleSeleccionado.Ruta!.CoberturaColonias.Sum(c => c.Colonia.Habitantes)</label>
+                        <label class="form-control mb-2">@((detalleSeleccionado.Ruta?.CoberturaColonias?.Sum(c => c.Colonia.Habitantes)) ?? 0)</label>
                     </div>
                     
 
@@ -233,6 +245,8 @@
     private List<DetalleDiario> listaDetalles = new List<DetalleDiario>();
     private DetalleDiario detalleSeleccionado = new ();
     private List<Unidad> listaUnidadesDisponibles = new List<Unidad>();
+    private List<Tipo_Unidad> listaTipos = new();
+    private int SelectedTipoId = 0;
     private List<Empleado> EmpleadosDisponibles = new List<Empleado>();
     private List<Empleado> EmpleadosUsar = new List<Empleado>();
     private List<Ruta> Rutas = new ();
@@ -244,8 +258,14 @@
     }
     public async Task GetDisponibles()
     {
-        if (DateTime.Now <= detalleSeleccionado.Fecha_Inicio && detalleSeleccionado.Fecha_Inicio < detalleSeleccionado.Fecha_TerminoEstimado){
+        if (DateTime.Now <= detalleSeleccionado.Fecha_Inicio && detalleSeleccionado.Fecha_Inicio < detalleSeleccionado.Fecha_TerminoEstimado)
+        {
             listaUnidadesDisponibles =  await unidadService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado) ?? new();
+            // Si el usuario escogió un tipo, filtrar las unidades por ese tipo
+            if (SelectedTipoId > 0)
+            {
+                listaUnidadesDisponibles = listaUnidadesDisponibles.Where(u => u.ID_TipoUnidad == SelectedTipoId).ToList();
+            }
             var Choferes = await empleadoService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado , true) ?? new();
             var NoChoferes = await empleadoService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado, false) ?? new();
 
@@ -308,6 +328,12 @@
     {
         detalleSeleccionado = new DetalleDiario();
         await GetRutas();
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
+        // reset selections to avoid null references
+        SelectedTipoId = 0;
+        listaUnidadesDisponibles = new List<Unidad>();
+        EmpleadosDisponibles = new List<Empleado>();
+        EmpleadosUsar = new List<Empleado>();
         StateHasChanged();     
         await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
         await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!

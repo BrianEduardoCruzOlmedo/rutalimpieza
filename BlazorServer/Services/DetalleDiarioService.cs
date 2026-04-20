@@ -6,6 +6,8 @@ namespace BlazorServer.Services
     public class DetalleDiarioService
     {
         private readonly HttpClient _http;
+        // Evento para notificar cambios (nuevo folio, actualización, borrado)
+        public event Action? OnChange;
 
         public DetalleDiarioService(HttpClient http) => _http = http;
 
@@ -15,17 +17,23 @@ namespace BlazorServer.Services
         public async Task<DetalleDiario?> Post(DetalleDiario detalle)
         {
             var response = await _http.PostAsJsonAsync("api/DetalleDiario", detalle);
+            if (response.IsSuccessStatusCode)
+            {
+                OnChange?.Invoke();
+            }
             return await response.Content.ReadFromJsonAsync<DetalleDiario>();
         }
 
         public async Task UpdateStatus(int id, DetalleDiario detalle)
         {
             await _http.PutAsJsonAsync($"api/DetalleDiario/UpdateStatus/{id}", detalle);
+            OnChange?.Invoke();
         }
 
         public async Task Delete(int id)
         {
             await _http.DeleteAsync($"api/DetalleDiario/{id}");
+            OnChange?.Invoke();
         }
     }
 

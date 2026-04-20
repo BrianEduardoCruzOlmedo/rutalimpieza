@@ -1,6 +1,7 @@
 @page "/listUnidades"
 @using BlazorServer.Models
 @inject UnidadService UnidadService
+@inject TipoUnidadService TipoUnidadService
 
 <h3>Catálogo de Unidades</h3>
 
@@ -24,6 +25,85 @@
     </Filas>
 </TablaCrudGenerica>
 
+    <Modal @ref="modal_Create" title="Registrar Nueva Unidad">
+        <BodyTemplate>
+            <EditForm Model="unidadSeleccionado">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText class="form-control" @bind-Value="unidadSeleccionado.Nombre" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Unidad</label>
+                    <InputSelect class="form-select" @bind-Value="unidadSeleccionado.ID_TipoUnidad">
+                        <option value="0">-- Seleccione un tipo --</option>
+                        @if (listaTipos != null)
+                        {
+                            @foreach (var t in listaTipos)
+                            {
+                                <option value="@t.ID">@t.Nombre</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar Unidad</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Update" title="Editar Unidad" ModalType="ModalType.Warning">
+        <BodyTemplate>
+            <EditForm Model="unidadSeleccionado">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText class="form-control" @bind-Value="unidadSeleccionado.Nombre" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Unidad</label>
+                    <InputSelect class="form-select" @bind-Value="unidadSeleccionado.ID_TipoUnidad">
+                        <option value="0">-- Seleccione un tipo --</option>
+                        @if (listaTipos != null)
+                        {
+                            @foreach (var t in listaTipos)
+                            {
+                                <option value="@t.ID">@t.Nombre</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarEditar">Actualizar Unidad</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Read" title="Detalles de Unidad" ModalType="ModalType.Info">
+        <BodyTemplate>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Id:</strong> @unidadSeleccionado?.Id</li>
+                <li class="list-group-item"><strong>Nombre:</strong> @unidadSeleccionado?.Nombre</li>
+                <li class="list-group-item"><strong>Tipo:</strong> @unidadSeleccionado?.TipoUnidad?.Nombre</li>
+            </ul>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="() => modal_Read.HideAsync()">Cerrar</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Delete" title="Eliminar Unidad" ModalType="ModalType.Danger">
+        <BodyTemplate>
+            <p class="text-danger">¿Estás seguro que deseas eliminar la unidad <strong>@unidadSeleccionado?.Nombre</strong>?</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Delete.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmarEliminar">Sí, Eliminar</Button>
+        </FooterTemplate>
+    </Modal>
+
 
 
 @code {
@@ -34,6 +114,7 @@
     
     private List<Unidad> listaUnidades = new();
     private Unidad? unidadSeleccionado;
+    private List<Tipo_Unidad> listaTipos = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,6 +124,10 @@
     public async Task AbrirModalCrear()
     {
         unidadSeleccionado = new Unidad();
+        // cargar tipos para el select
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
+        StateHasChanged();
+        await Task.Delay(30);
         await modal_Create.ShowAsync();
     }
 
@@ -62,5 +147,32 @@
     {
         unidadSeleccionado = unidad;
         await modal_Delete.ShowAsync();
+    }
+
+    public async Task GuardarCrear()
+    {
+        if (unidadSeleccionado == null) return;
+        await UnidadService.Create(unidadSeleccionado);
+        await modal_Create.HideAsync();
+        listaUnidades = await UnidadService.GetUnidades() ?? new();
+        StateHasChanged();
+    }
+
+    public async Task GuardarEditar()
+    {
+        if (unidadSeleccionado == null) return;
+        await UnidadService.Update(unidadSeleccionado.Id, unidadSeleccionado);
+        await modal_Update.HideAsync();
+        listaUnidades = await UnidadService.GetUnidades() ?? new();
+        StateHasChanged();
+    }
+
+    public async Task ConfirmarEliminar()
+    {
+        if (unidadSeleccionado == null) return;
+        await UnidadService.Delete(unidadSeleccionado.Id);
+        await modal_Delete.HideAsync();
+        listaUnidades = await UnidadService.GetUnidades() ?? new();
+        StateHasChanged();
     }
 }

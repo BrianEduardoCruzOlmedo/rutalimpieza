@@ -24,6 +24,67 @@
     </Filas>
 </TablaCrudGenerica>
 
+    <Modal @ref="modal_Create" title="Registrar Nuevo Tipo de Unidad">
+        <BodyTemplate>
+            <EditForm Model="tipoSeleccionado">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText class="form-control" @bind-Value="tipoSeleccionado.Nombre" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ltrs Tanque</label>
+                    <InputNumber class="form-control" @bind-Value="tipoSeleccionado.LtrsDieselTanque" />
+                </div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar Tipo</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Update" title="Editar Tipo de Unidad" ModalType="ModalType.Warning">
+        <BodyTemplate>
+            <EditForm Model="tipoSeleccionado">
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <InputText class="form-control" @bind-Value="tipoSeleccionado.Nombre" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ltrs Tanque</label>
+                    <InputNumber class="form-control" @bind-Value="tipoSeleccionado.LtrsDieselTanque" />
+                </div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarEditar">Actualizar Tipo</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Read" title="Detalles del Tipo" ModalType="ModalType.Info">
+        <BodyTemplate>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Id:</strong> @tipoSeleccionado?.ID</li>
+                <li class="list-group-item"><strong>Nombre:</strong> @tipoSeleccionado?.Nombre</li>
+                <li class="list-group-item"><strong>Ltrs Tanque:</strong> @tipoSeleccionado?.LtrsDieselTanque</li>
+            </ul>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="() => modal_Read.HideAsync()">Cerrar</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Delete" title="Eliminar Tipo" ModalType="ModalType.Danger">
+        <BodyTemplate>
+            <p class="text-danger">¿Estás seguro que deseas eliminar el tipo <strong>@tipoSeleccionado?.Nombre</strong>?</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Delete.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmarEliminar">Sí, Eliminar</Button>
+        </FooterTemplate>
+    </Modal>
+
 @code {
     private Modal modal_Create = new();
     private Modal modal_Read = new();
@@ -61,5 +122,32 @@
     {
         tipoSeleccionado = tipo;
         await modal_Delete.ShowAsync();
+    }
+
+    public async Task GuardarCrear()
+    {
+        if (tipoSeleccionado == null) return;
+        await TipoUnidadService.Create(tipoSeleccionado);
+        await modal_Create.HideAsync();
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
+        StateHasChanged();
+    }
+
+    public async Task GuardarEditar()
+    {
+        if (tipoSeleccionado == null) return;
+        await TipoUnidadService.Update(tipoSeleccionado.ID, tipoSeleccionado);
+        await modal_Update.HideAsync();
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
+        StateHasChanged();
+    }
+
+    public async Task ConfirmarEliminar()
+    {
+        if (tipoSeleccionado == null) return;
+        await TipoUnidadService.Delete(tipoSeleccionado.ID);
+        await modal_Delete.HideAsync();
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
+        StateHasChanged();
     }
 }

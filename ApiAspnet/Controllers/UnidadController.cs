@@ -27,9 +27,12 @@ namespace ApiAspnet.Controllers
         [HttpGet("Read/{Id}")]
         public async Task<ActionResult<Unidad>> Read(int Id)
         {
-            var unidad = (await _context.Unidades.Include(u => u.TipoUnidad)
-                .FirstOrDefaultAsync(u => u.Id == Id)) ?? new();
-                return unidad;
+            var unidad = await _context.Unidades
+                .Include(u => u.TipoUnidad)
+                .FirstOrDefaultAsync(u => u.Id == Id);
+
+            if (unidad == null) return NotFound();
+            return unidad;
         }
         [HttpPut("Update/{Id}")]
         public async Task<ActionResult<Unidad>> Update(int Id, Unidad unidad)
