@@ -24,6 +24,79 @@
     </Filas>
 </TablaCrudGenerica>
 
+<Modal @ref="modal_Create" title="Registrar Nuevo Folio" Size="ModalSize.Large" ModalType="ModalType.Success">
+        <BodyTemplate>
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h6 class="text-primary border-bottom pb-2">Datos de Empleado</h6>
+                <EditForm Model="empleadoSeleccionado">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        <InputText class="form-control" @bind-Value="empleadoSeleccionado.Nombre" />
+                    </div>
+                    <div>
+                        <label class="form-label"> ¿Es Chofer?</label>
+                        <InputCheckbox class="form-check-input" @bind-Value="empleadoSeleccionado.isChofer" />
+                    </div>
+                </EditForm>
+                </div>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar</Button>
+        </FooterTemplate>
+    </Modal>
+
+<Modal @ref="modal_Update" title="@($"Editar Empleado #{empleadoSeleccionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Warning">
+        <BodyTemplate>
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h6 class="text-primary border-bottom pb-2">Datos de Empleado</h6>
+                    <EditForm Model="empleadoSeleccionado">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre Completo</label>
+                            <InputText class="form-control" @bind-Value="empleadoSeleccionado.Nombre" />
+                        </div>
+                        <div>
+                            <label class="form-label"> ¿Es Chofer?</label>
+                            <InputCheckbox class="form-check-input" @bind-Value="empleadoSeleccionado.isChofer" />
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarEditar">Guardar</Button>
+        </FooterTemplate>
+    </Modal>
+
+<Modal @ref="modal_Read" title="@($"Detalles del Empleado #{empleadoSeleccionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Info">
+        <BodyTemplate>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>ID:</strong> @empleadoSeleccionado.ID</li>
+                <li class="list-group-item"><strong>Nombre:</strong> @empleadoSeleccionado.Nombre</li>
+                <li class="list-group-item"><strong>Es Chofer:</strong> @(empleadoSeleccionado.isChofer ? "Si" : "No")</li>
+                
+            </ul>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="() => modal_Read.HideAsync()">Cerrar</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Delete" title="¡Advertencia!" ModalType="ModalType.Danger" >
+        <BodyTemplate >
+        <p class="text-danger">¿Estás seguro que deseas eliminar el <strong>ID #@empleadoSeleccionado.ID</strong>?</p>
+            <p>Se borrará todo los datos del empleado.</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Delete.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmarEliminar">Sí, Eliminar Registro</Button>
+        </FooterTemplate>
+    </Modal>
 
 
 @code {
@@ -34,7 +107,7 @@
     private Modal modal_Delete = new Modal();
     
     private List<Empleado> listaEmpleados = new List<Empleado>();
-    private Empleado? empleadoSeleccionado;
+    private Empleado empleadoSeleccionado = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,25 +116,55 @@
 
     public async Task AbrirModalCrear()
     {
-        empleadoSeleccionado = new Empleado();
-        await modal_Create.ShowAsync();
+        empleadoSeleccionado = new ();
+        StateHasChanged();
+        await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
+        await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!
     }
 
     public async Task AbrirModalEditar(Empleado empleado)
     {
         empleadoSeleccionado = empleado;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Update.ShowAsync();
     }
 
     public async Task AbrirModalVer(Empleado empleado)
     {
         empleadoSeleccionado = empleado;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Read.ShowAsync();
     }
 
     public async Task AbrirModalEliminar(Empleado empleado)
     {
         empleadoSeleccionado = empleado;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Delete.ShowAsync();
+    }
+
+   
+    public async Task GuardarCrear()
+    {
+        await empleadoService.Create(empleadoSeleccionado);
+        await modal_Create.HideAsync();
+        listaEmpleados = (await empleadoService.GetEmpleados()) ?? new();
+    }
+
+    public async Task GuardarEditar()
+    {
+        await empleadoService.Update(empleadoSeleccionado!.ID, empleadoSeleccionado);
+        await modal_Update.HideAsync();
+        listaEmpleados = (await empleadoService.GetEmpleados()) ?? new();
+    }
+
+    public async Task ConfirmarEliminar()
+    {
+        await empleadoService.Delete(empleadoSeleccionado!.ID);
+        await modal_Delete.HideAsync();
+        listaEmpleados = (await empleadoService.GetEmpleados()) ?? new();
     }
 }

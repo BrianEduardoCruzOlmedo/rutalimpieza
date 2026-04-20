@@ -110,12 +110,16 @@ namespace ApiAspnet.Migrations
                     Fecha_TerminoReal = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ID_Unidad = table.Column<int>(type: "INTEGER", nullable: false),
                     ID_Ruta = table.Column<int>(type: "INTEGER", nullable: false),
-                    km_Recorridos = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Diesel_inicio = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Diesel_Recargado = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Diesel_Final = table.Column<decimal>(type: "TEXT", nullable: false),
-                    CapacidadDiesel = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Autonomia = table.Column<decimal>(type: "TEXT", nullable: false)
+                    CantidadBasuraKg = table.Column<decimal>(type: "TEXT", nullable: true),
+                    NumeroTurno = table.Column<int>(type: "INTEGER", nullable: false),
+                    Puches = table.Column<string>(type: "TEXT", nullable: true),
+                    Observaciones = table.Column<string>(type: "TEXT", nullable: true),
+                    km_Recorridos = table.Column<decimal>(type: "TEXT", nullable: true),
+                    Diesel_inicio = table.Column<decimal>(type: "TEXT", nullable: true),
+                    Diesel_Recargado = table.Column<decimal>(type: "TEXT", nullable: true),
+                    Diesel_Final = table.Column<decimal>(type: "TEXT", nullable: true),
+                    CapacidadDiesel = table.Column<decimal>(type: "TEXT", nullable: true),
+                    Autonomia = table.Column<decimal>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

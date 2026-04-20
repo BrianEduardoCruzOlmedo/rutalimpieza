@@ -25,13 +25,17 @@ namespace ApiAspnet.Models
         public Ruta? Ruta { get; set; }
         public ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 
+        public decimal? CantidadBasuraKg { get; set; }
+        public int NumeroTurno { get; set; }
 
-        public decimal km_Recorridos { get; set; }
+        public string? Puches { get; set; } 
+        public string? Observaciones { get; set; } 
+        public decimal? km_Recorridos { get; set; }
         
-        public decimal Diesel_inicio { get; set; }
-        public decimal Diesel_Recargado { get; set; }
-        public decimal Diesel_Final { get; set; }
-        public decimal CapacidadDiesel { get; set; }
-        public decimal Autonomia { get; set; }
+        public decimal? Diesel_inicio { get; set; }
+        public decimal? Diesel_Recargado { get; set; }
+        public decimal? Diesel_Final { get; set; }
+        public decimal? CapacidadDiesel { get; set; }
+        public decimal? Autonomia { get; set; }
     }
 }

@@ -41,19 +41,22 @@ namespace ApiAspnet.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Autonomia")
+                    b.Property<decimal?>("Autonomia")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("CapacidadDiesel")
+                    b.Property<decimal?>("CantidadBasuraKg")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Diesel_Final")
+                    b.Property<decimal?>("CapacidadDiesel")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Diesel_Recargado")
+                    b.Property<decimal?>("Diesel_Final")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Diesel_inicio")
+                    b.Property<decimal?>("Diesel_Recargado")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Diesel_inicio")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Fecha_Inicio")
@@ -74,7 +77,16 @@ namespace ApiAspnet.Migrations
                     b.Property<int>("ID_Unidad")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("km_Recorridos")
+                    b.Property<int>("NumeroTurno")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Puches")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("km_Recorridos")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
