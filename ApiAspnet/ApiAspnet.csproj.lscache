@@ -57,26 +57,27 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
+Constants/
+ NombresColonias.cs
+ TiposUnidad.cs
 Controllers/
- ChoferContorller.cs
+ ColoniaController.cs
  DetalleDiarioController.cs
  EmpleadoController.cs
- FolioColoniaController.cs
- RutaColoniaController.cs
+ RutaController.cs
  TipoUnidadController.cs
  UnidadController.cs
  WeatherForecastController.cs
 Data/AppDbContext.cs
 Migrations/
- 20260418224633_Prueba3.cs
- 20260418224633_Prueba3.Designer.cs
+ 20260419174312_initial.cs
+ 20260419174312_initial.Designer.cs
  AppDbContextModelSnapshot.cs
 Models/
- Chofer.cs
+ Colonia.cs
  DetalleDiario.cs
  Empleado.cs
- Folio_colonia.cs
- RutaColonia.cs
+ Ruta.cs
  TipoUnidad.cs
  Unidad.cs
 obj/Debug/net10.0/
@@ -424,7 +425,7 @@ WeatherForecast.cs
   System.Xml.XPath.dll
   System.Xml.XPath.XDocument.dll
   WindowsBase.dll
- microsoft.openapi/2.0.0/lib/net8.0/Microsoft.OpenApi.dll
+ microsoft.openapi/2.4.1/lib/net8.0/Microsoft.OpenApi.dll
  microsoft.visualstudio.solutionpersistence/1.0.52/lib/net8.0/Microsoft.VisualStudio.SolutionPersistence.dll
  microsoft.visualstudio.web.codegeneration.core/10.0.2/lib/net10.0/Microsoft.VisualStudio.Web.CodeGeneration.Core.dll
  microsoft.visualstudio.web.codegeneration.design/10.0.2/lib/net10.0/dotnet-aspnet-codegenerator-design.dll
@@ -447,6 +448,9 @@ WeatherForecast.cs
  sqlitepclraw.bundle_e_sqlite3/2.1.11/lib/netstandard2.0/SQLitePCLRaw.batteries_v2.dll
  sqlitepclraw.core/2.1.11/lib/netstandard2.0/SQLitePCLRaw.core.dll
  sqlitepclraw.provider.e_sqlite3/2.1.11/lib/net6.0/SQLitePCLRaw.provider.e_sqlite3.dll
+ swashbuckle.aspnetcore.swagger/10.1.7/lib/net10.0/Swashbuckle.AspNetCore.Swagger.dll
+ swashbuckle.aspnetcore.swaggergen/10.1.7/lib/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+ swashbuckle.aspnetcore.swaggerui/10.1.7/lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
  system.codedom/6.0.0/lib/net6.0/System.CodeDom.dll
  system.composition.attributedmodel/9.0.0/lib/net9.0/System.Composition.AttributedModel.dll
  system.composition.convention/9.0.0/lib/net9.0/System.Composition.Convention.dll

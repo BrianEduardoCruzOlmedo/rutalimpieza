@@ -52,6 +52,114 @@
         </td>
     </Filas>
 </TablaCrudGenerica>
+
+@if (detalleSeleccionado != null)
+{
+    <Modal @ref="modal_Create" title="Registrar Nuevo Folio" Size="ModalSize.Large">
+        <BodyTemplate>
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h6 class="text-primary border-bottom pb-2">Datos de Operación</h6>
+                    
+                    <label class="form-label mt-2">Fecha de Orden</label>
+                    <input type="datetime-local" class="form-control mb-2" @bind="detalleSeleccionado.Fecha_orden" />
+                    
+                    <label class="form-label">Fecha de Inicio</label>
+                    <input type="datetime-local" class="form-control mb-2" @bind="detalleSeleccionado.Fecha_Inicio" />
+                    
+                    <label class="form-label">Fecha Término (Estimado)</label>
+                    <input type="datetime-local" class="form-control mb-2" @bind="detalleSeleccionado.Fecha_TerminoEstimado" />
+
+                    <label class="form-label">Fecha Término (Real)</label>
+                    <input type="datetime-local" class="form-control mb-3" @bind="detalleSeleccionado.Fecha_TerminoReal" />
+
+                    <label class="form-label">ID Unidad</label>
+                    <input type="number" class="form-control mb-2" @bind="detalleSeleccionado.ID_Unidad" />
+                    
+                    <label class="form-label">ID Ruta</label>
+                    <input type="number" class="form-control mb-2" @bind="detalleSeleccionado.ID_Ruta" />
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="text-success border-bottom pb-2">Métricas de Rendimiento</h6>
+                    
+                    <label class="form-label mt-2">Kilómetros Recorridos</label>
+                    <input type="number" step="0.1" class="form-control mb-3" @bind="detalleSeleccionado.km_Recorridos" />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label">Diésel Inicio (L)</label>
+                            <input type="number" step="0.1" class="form-control mb-2" @bind="detalleSeleccionado.Diesel_inicio" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Diésel Final (L)</label>
+                            <input type="number" step="0.1" class="form-control mb-2" @bind="detalleSeleccionado.Diesel_Final" />
+                        </div>
+                    </div>
+
+                    <label class="form-label mt-2 text-primary fw-bold">Diésel Recargado (Lts)</label>
+                    <input type="number" step="0.1" class="form-control border-primary mb-3" @bind="detalleSeleccionado.Diesel_Recargado" />
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label">Cap. Tanque</label>
+                            <input type="number" step="0.1" class="form-control mb-2" @bind="detalleSeleccionado.CapacidadDiesel" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Autonomía</label>
+                            <input type="number" step="0.1" class="form-control mb-2" @bind="detalleSeleccionado.Autonomia" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="AbrirModalCrear">Guardar Folio</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Update" title="@($"Editar Folio #{detalleSeleccionado.ID}")" Size="ModalSize.Large">
+        <BodyTemplate>
+            <p class="text-muted text-center py-4">
+                <em>*Copia aquí adentro el mismo <code>&lt;div class="row"&gt;</code> completo que usamos en el modal Crear para tener los mismos campos.*</em>
+            </p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarEditar">Actualizar Folio</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Read" title="@($"Detalles del Folio #{detalleSeleccionado.ID}")" Size="ModalSize.Large">
+        <BodyTemplate>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Fecha Orden:</strong> @detalleSeleccionado.Fecha_orden.ToString("dd/MM/yyyy HH:mm")</li>
+                <li class="list-group-item"><strong>Unidad asignada (ID):</strong> @detalleSeleccionado.ID_Unidad</li>
+                <li class="list-group-item"><strong>Ruta asignada (ID):</strong> @detalleSeleccionado.ID_Ruta</li>
+                <li class="list-group-item"><strong>Kilómetros Recorridos:</strong> @detalleSeleccionado.km_Recorridos km</li>
+                <li class="list-group-item text-success"><strong>Diésel Recargado:</strong> @detalleSeleccionado.Diesel_Recargado Lts</li>
+                <li class="list-group-item"><strong>Autonomía:</strong> @detalleSeleccionado.Autonomia</li>
+            </ul>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Primary" @onclick="() => modal_Read.HideAsync()">Cerrar</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Delete" title="¡Advertencia!">
+        <BodyTemplate>
+            <p class="text-danger">¿Estás seguro que deseas eliminar el <strong>Folio #@detalleSeleccionado.ID</strong>?</p>
+            <p>Se borrará todo el historial de este viaje.</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Delete.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmarEliminar">Sí, Eliminar Registro</Button>
+        </FooterTemplate>
+    </Modal>
+}
+
+
 @code {
     private Modal modal_Create = new Modal();
     private Modal modal_Read = new Modal();
@@ -66,27 +174,65 @@
         listaDetalles = (await DetalleDiarioService.GetFolios()) ?? new();
     }
 
+    // ========================================================
+    // 1. FUNCIONES PARA ABRIR LAS VENTANAS (Conectadas a la Tabla)
+    // ========================================================
+    // ========================================================
+    // 1. FUNCIONES PARA ABRIR LAS VENTANAS 
+    // ========================================================
     public async Task AbrirModalCrear()
     {
         detalleSeleccionado = new DetalleDiario();
-        await modal_Create.ShowAsync();
+        StateHasChanged();     // 1. Le avisa a Blazor que la variable ya tiene datos
+        await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
+        await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!
     }
 
     public async Task AbrirModalEditar(DetalleDiario detalle)
     {
         detalleSeleccionado = detalle;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Update.ShowAsync();
     }
 
     public async Task AbrirModalVer(DetalleDiario detalle)
     {
         detalleSeleccionado = detalle;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Read.ShowAsync();
     }
 
     public async Task AbrirModalEliminar(DetalleDiario detalle)
     {
         detalleSeleccionado = detalle;
+        StateHasChanged();
+        await Task.Delay(50);
         await modal_Delete.ShowAsync();
+    }
+
+    // ========================================================
+    // 2. FUNCIONES PARA GUARDAR LOS DATOS (Conectadas a los botones del Modal)
+    // ========================================================
+    public async Task GuardarCrear()
+    {
+        await DetalleDiarioService.Post(detalleSeleccionado!);
+        await modal_Create.HideAsync();
+        listaDetalles = (await DetalleDiarioService.GetFolios()) ?? new();
+    }
+
+    public async Task GuardarEditar()
+    {
+        await DetalleDiarioService.UpdateStatus(detalleSeleccionado!.ID, detalleSeleccionado);
+        await modal_Update.HideAsync();
+        listaDetalles = (await DetalleDiarioService.GetFolios()) ?? new();
+    }
+
+    public async Task ConfirmarEliminar()
+    {
+        await DetalleDiarioService.Delete(detalleSeleccionado!.ID);
+        await modal_Delete.HideAsync();
+        listaDetalles = (await DetalleDiarioService.GetFolios()) ?? new();
     }
 }

@@ -56,11 +56,10 @@ TemporaryDependencyNodeTargetIdentifier=net8.0
 
 [sourceFiles]
 Models/
- Chofer.cs
+ Colonia.cs
  DetalleDiario.cs
  Empleado.cs
- Folio_colonia.cs
- RutaColonia.cs
+ Ruta.cs
  TipoUnidad.cs
  Unidad.cs
 obj/Debug/net8.0/
@@ -69,10 +68,9 @@ obj/Debug/net8.0/
  BlazorServer.GlobalUsings.g.cs
 Program.cs
 Services/
- Chofer.cs
+ ColoniaService.cs
  DetalleDiarioService.cs
  EmpleadoService.cs
- Folio_colonia.cs
  RutaColoniaService.cs
  TipoUnidadService.cs
  UnidadService.cs
