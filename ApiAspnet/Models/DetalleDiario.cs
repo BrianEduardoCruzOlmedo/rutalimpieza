@@ -15,10 +15,9 @@ namespace ApiAspnet.Models
 
         
         public int ID_Unidad { get; set; }
-
-
         [ForeignKey("ID_Unidad")]
         public Unidad? Unidad { get; set; }
+
         public int ID_Ruta { get; set; }
 
         [ForeignKey(nameof(ID_Ruta))]

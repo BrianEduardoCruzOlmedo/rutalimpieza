@@ -5,7 +5,7 @@
 @inject UnidadService unidadService
 @inject RutaService rutaService
 @inject EmpleadoService empleadoService
-@inject TipoUnidadService TipoUnidadService
+@inject ColoniaService coloniaService
 
 <h3>Historial de Rutas y Diésel (Folios)</h3>
 
@@ -41,7 +41,7 @@
             {
                 
                     var Detalle = detalle.Ruta.CoberturaColonias;
-                    var avance = Detalle.Average(c => ((decimal)c.PorcentajeAtendidos/100) * c.Colonia.Habitantes);
+                    var avance = Detalle.Average(c => c.PorcentajeAtendidos);
                 
                 <div class="progress" style="width: 100px; height: 20px;">
                     <div class="progress-bar" role="progressbar"
@@ -95,7 +95,7 @@
                         </div>
                         <div>
                             <label class="form-label">Escoja Ruta</label>
-                            <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Ruta">
+                        <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Ruta" @bind-Value:after="() => { detalleSeleccionado.km_Recorridos = Rutas.FirstOrDefault(p => p.ID == detalleSeleccionado.ID_Ruta)!.KM_Estimados; }">
                                 <option value="0">-- Seleccione una Ruta --</option>
                                 
                                 @foreach (var ruta in Rutas)
@@ -104,6 +104,115 @@
                                 }
                             </InputSelect>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                Empleados Disponibles
+                                <SortableList TItem="Empleado"
+                                              Group="SharedList1"
+                                              Name="empList1"
+                                              Data="EmpleadosDisponibles"
+                                              Context="item"
+                                              OnUpdate="OnEmpleadosDUpdate"
+                                              OnRemove="OnEmpleadosDRemove">
+                                    <ItemTemplate>
+                                        @item.Nombre , es chofer? @(item.isChofer ? "Si" : "No")
+                                    </ItemTemplate>
+                                </SortableList>
+                            </div>
+                            <div class="col">
+                                Empleados a Usar
+                                <SortableList TItem="Empleado"
+                                              Group="SharedList1"
+                                              Name="empList2"
+                                              Data="EmpleadosUsar"
+                                              Context="item"
+                                              OnUpdate="OnEmpleadosUUpdate"
+                                              OnRemove="OnEmpleadosURemove">
+                                    <ItemTemplate>
+                                        @item.Nombre, es chofer? @(item.isChofer ? "Si" : "No")
+                                    </ItemTemplate>
+                                </SortableList>
+                            </div>
+                        </div>
+                   
+                    
+                        <div class="mb-3">
+                            <label class="form-text">Numero de turno</label>
+                            <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.NumeroTurno">
+                                <option value="0">-- Seleccione un turno --</option>
+                                <option value="1">Turno 1</option>
+                                <option value="2">Turno 2</option>
+                                <option value="3">Turno 3</option>
+                            </InputSelect>
+                        </div>
+                
+                        <div class="mb-3">
+                            <label class="form-text">Km Recorridos Estimados</label>
+                            
+                            <label class="form-control mb-2" >@(detalleSeleccionado.km_Recorridos)</label>
+                        </div>
+
+                    </EditForm>
+                    
+                   
+             
+               
+                </div>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar Folio</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="modal_Update" title="@($"Editar Folio #{detalleSeleccionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Warning">
+        <BodyTemplate>
+        <div class="row">
+            <div class="col-md-6 border-end">
+
+                <h6 class="text-primary border-bottom pb-2">Datos de Operación</h6>
+                <EditForm Model="detalleSeleccionado">
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Orden</label>
+                        <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_orden" disabled="@(DateTime.Now > detalleSeleccionado.Fecha_Inicio)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Inicio</label>
+                        <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_Inicio" @bind-Value:after="GetDisponibles" min="@detalleSeleccionado.Fecha_orden.ToString("yyyy-MM-dd ")" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Estimado</label>
+                        <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_TerminoEstimado" @bind-Value:after="GetDisponibles" min="@detalleSeleccionado.Fecha_Inicio.ToString("yyyy-MM-dd ")" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_TerminoReal" min="@detalleSeleccionado.Fecha_Inicio.ToString("yyyy-MM-dd ")" />
+                    </div>
+                    <div>
+
+                        <label class="form-label">Escoja Unidad</label>
+                        <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Unidad">
+                            <option value="0">-- Seleccione una Unidad --</option>
+                            @foreach (var unidad in listaUnidadesDisponibles)
+                            {
+                                <option value="@unidad.Id">@unidad.Nombre (Tipo: @unidad.TipoUnidad?.Nombre)</option>
+                            }
+                            <option value="@detalleSeleccionado.ID_Unidad">@detalleSeleccionado.Unidad!.Nombre (Tipo: @detalleSeleccionado.Unidad.TipoUnidad?.Nombre)</option>
+
+                        </InputSelect>
+                    </div>
+                    <div>
+                        <label class="form-label">Escoja Ruta</label>
+                        <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Ruta" @bind-Value:after="() => { detalleSeleccionado.km_Recorridos = Rutas.FirstOrDefault(p => p.ID == detalleSeleccionado.ID_Ruta)!.KM_Estimados; }">
+                            <option value="0">-- Seleccione una Ruta --</option>
+                                
+                            @foreach (var ruta in Rutas)
+                            {
+                                <option value="@ruta.ID">Nombre:@ruta.Nombre; colonias Ayuda:@(string.Join(", ", ruta.CoberturaColonias.Select(c => c.Colonia!.Nombre).ToList()))</option>
+                            }
+                        </InputSelect>
+                    </div>
                     <div class="row">
                         <div class="col">
                             Empleados Disponibles
@@ -134,11 +243,8 @@
                             </SortableList>
                         </div>
                     </div>
-                    <div>
-                        <label class="form-text">Cantidad de basura a Recolectar</label>
-                        <InputNumber class="form-control mb-2" @bind-Value="detalleSeleccionado.CantidadBasuraKg" />
-                    </div>
-                    
+
+                   
                     <div class="mb-3">
                         <label class="form-text">Numero de turno</label>
                         <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.NumeroTurno">
@@ -148,47 +254,43 @@
                             <option value="3">Turno 3</option>
                         </InputSelect>
                     </div>
+                
                     <div class="mb-3">
-                        <label class="form-text">Puches usados</label>
-                        <InputText class="form-control mb-2" @bind-Value="detalleSeleccionado.Puches" /> 
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-text">Observaciones</label>
-                        <InputTextArea class="form-control mb-2" @bind-Value="detalleSeleccionado.Observaciones" />
+                        <label class="form-text">Km Recorridos Estimados</label>
+                            
+                        <label class="form-control mb-2">@(detalleSeleccionado.km_Recorridos)</label>
                     </div>
                     <div class="mb-3">
-                        <label class="form-text">Kilómetros Recorridos</label>
-                        <label class="form-control mb-2">@(detalleSeleccionado.Ruta?.KM_Estimados ?? 0)</label>
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.km_Recorridos" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-text">Habitantes Atendidos</label>
-                        <label class="form-control mb-2" >@((detalleSeleccionado.Ruta?.CoberturaColonias?.Sum(c => c.Colonia.Habitantes)) ?? 0)</label>
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.Diesel_inicio" />
                     </div>
-                    <div>
-                        <label class="form-text">Colonias Atendidas</label>
-                        <label class="form-control mb-2">@((detalleSeleccionado.Ruta?.CoberturaColonias?.Sum(c => c.Colonia.Habitantes)) ?? 0)</label>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.Diesel_Recargado" />
                     </div>
-                    
-
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.Diesel_Final" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.CapacidadDiesel" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label mt-2">Fecha de Término Real</label>
+                        <NumberInput class="form-control mb-2" @bind-Value="detalleSeleccionado.Autonomia" />
+                    </div>
                 </EditForm>
+
                     
                    
              
-               
             </div>
-            </div>
-        </BodyTemplate>
-        <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
-            <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar Folio</Button>
-        </FooterTemplate>
-    </Modal>
-
-    <Modal @ref="modal_Update" title="@($"Editar Folio #{detalleSeleccionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Warning">
-        <BodyTemplate>
-            <p class="text-muted text-center py-4">
-                <em>*Copia aquí adentro el mismo <code>&lt;div class="row"&gt;</code> completo que usamos en el modal Crear para tener los mismos campos solo que echheca bien por qu e ahy datos que no podra cambiar.*</em>
-            </p>
+        </div>
         </BodyTemplate>
         <FooterTemplate>
             <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
@@ -234,30 +336,44 @@
     private List<DetalleDiario> listaDetalles = new List<DetalleDiario>();
     private DetalleDiario detalleSeleccionado = new ();
     private List<Unidad> listaUnidadesDisponibles = new List<Unidad>();
-    private List<Tipo_Unidad> listaTipos = new();
-    private int SelectedTipoId = 0;
+
     private List<Empleado> EmpleadosDisponibles = new List<Empleado>();
     private List<Empleado> EmpleadosUsar = new List<Empleado>();
     private List<Ruta> Rutas = new ();
 
 
+    private List<ColoniaHabitanteViewModel> lista_Colonia = new();
+    private List<ColoniaHabitanteViewModel> listaColoniaUsar = new();
+
+    public class ColoniaHabitanteViewModel
+    {
+        public Colonia Colonia { get; set; }
+        public int Porcentaje { get; set; }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         listaDetalles = (await detalleDiarioService.GetFolios()) ?? new();
+
         EmpleadosDisponibles = await empleadoService.GetEmpleados() ?? new();
+
         await GetRutas();
+        listaDetalles.ForEach(p =>
+       {
+
+           p.Ruta = Rutas.FirstOrDefault(r => r.ID == p.ID_Ruta) ?? new();
+
+       });
         StateHasChanged();
     }
     public async Task GetDisponibles()
     {
-        if (DateTime.Now <= detalleSeleccionado.Fecha_Inicio && detalleSeleccionado.Fecha_Inicio < detalleSeleccionado.Fecha_TerminoEstimado)
+        if (detalleSeleccionado.Fecha_Inicio < detalleSeleccionado.Fecha_TerminoEstimado)
         {
             listaUnidadesDisponibles =  await unidadService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado) ?? new();
             // Si el usuario escogió un tipo, filtrar las unidades por ese tipo
-            if (SelectedTipoId > 0)
-            {
-                listaUnidadesDisponibles = listaUnidadesDisponibles.Where(u => u.ID_TipoUnidad == SelectedTipoId).ToList();
-            }
+
+
             var Choferes = await empleadoService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado , true) ?? new();
             var NoChoferes = await empleadoService.GetDisponibles(detalleSeleccionado.Fecha_Inicio, detalleSeleccionado.Fecha_TerminoEstimado, false) ?? new();
 
@@ -315,15 +431,20 @@
     public async Task GetRutas()
     {
         Rutas = await rutaService.GetRutas() ?? new();
+        var colonias = await coloniaService.GetColonias() ?? new();
+        Rutas.ForEach(ruta => {
+            ruta.CoberturaColonias = ruta.CoberturaColonias.Select(cobertura => {
+                cobertura.Colonia = colonias.FirstOrDefault(col => col.ID == cobertura.ID_Colonia);
+                return cobertura;
+            }).ToList();
+
+        });
     }
     public async Task AbrirModalCrear()
     {
-        detalleSeleccionado = new DetalleDiario();
         await GetRutas();
-        listaTipos = await TipoUnidadService.GetTipos() ?? new();
         // reset selections to avoid null references
-        SelectedTipoId = 0;
-         await GetDisponibles();
+        await GetDisponibles();
         StateHasChanged();     
         await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
         await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!
@@ -332,7 +453,19 @@
     public async Task AbrirModalEditar(DetalleDiario detalle)
     {
         detalleSeleccionado = detalle;
+        await GetDisponibles();
         await GetRutas();
+        if (Rutas.Any(i => i.ID == detalle.ID_Ruta)) { 
+            detalle.Ruta = Rutas.FirstOrDefault(i => i.ID == detalle.ID_Ruta); 
+
+        }
+        if (listaUnidadesDisponibles.Any(i => i.Id == detalle.ID_Unidad)) {
+            detalle.Unidad = listaUnidadesDisponibles.FirstOrDefault(i => i.Id == detalle.ID_Unidad);
+        }
+        EmpleadosUsar = detalle.Empleados.ToList();
+        EmpleadosDisponibles.Except(EmpleadosUsar);
+
+
         StateHasChanged();
         await Task.Delay(50);
         await modal_Update.ShowAsync();
@@ -354,10 +487,11 @@
         await modal_Delete.ShowAsync();
     }
 
-   
+
     public async Task GuardarCrear()
     {
-        await detalleDiarioService.Post(detalleSeleccionado!);
+        detalleSeleccionado.Empleados = EmpleadosUsar;
+        await detalleDiarioService.Post(detalleSeleccionado);
         await modal_Create.HideAsync();
         listaDetalles = (await detalleDiarioService.GetFolios()) ?? new();
     }

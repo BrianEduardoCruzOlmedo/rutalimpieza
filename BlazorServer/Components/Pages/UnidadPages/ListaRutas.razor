@@ -189,7 +189,7 @@
     private List<ColoniaHabitanteViewModel> listaColoniaUsar = new();
     private List<Ruta> lista_Rutas = new();
     private Ruta rutaSelecionado = new();
-    public Dictionary<int, int> NumeroHabitantesTotal { get; set; } = new();
+
     public class ColoniaHabitanteViewModel
     {
         public Colonia Colonia { get; set; }
@@ -368,19 +368,7 @@
         // remove the item from the old index in list 1
         lista_Colonia.Remove(lista_Colonia[args.OldIndex]);
     }
-    public int this[int coloniaId]
-    {
-        get
-        {
-            // If the key doesn't exist, return 0 (or default value)
-            return NumeroHabitantesTotal.ContainsKey(coloniaId) ? NumeroHabitantesTotal[coloniaId] : 0;
-        }
-        set
-        {
-            // Update or add the value
-            NumeroHabitantesTotal[coloniaId] = value;
-        }
-    }
+   
 
     private void OnColoniasURemove(SortableListEventArgs args)
     {
