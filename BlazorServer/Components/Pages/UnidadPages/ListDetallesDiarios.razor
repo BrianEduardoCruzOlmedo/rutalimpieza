@@ -41,7 +41,7 @@
             {
                 
                     var Detalle = detalle.Ruta.CoberturaColonias;
-                    var avance = Detalle.Average(c => c.HabitantesAtendidos / c.Colonia.Habitantes);
+                    var avance = Detalle.Average(c => ((decimal)c.PorcentajeAtendidos/100) * c.Colonia.Habitantes);
                 
                 <div class="progress" style="width: 100px; height: 20px;">
                     <div class="progress-bar" role="progressbar"
@@ -83,17 +83,6 @@
                             <InputDate class="form-control mb-2" @bind-Value="detalleSeleccionado.Fecha_TerminoReal" min="@detalleSeleccionado.Fecha_Inicio.ToString("yyyy-MM-dd ")" />
                         </div>
                         <div>
-                            <label class="form-label">Escoja Tipo de Unidad</label>
-                            <InputSelect class="form-select mb-2" @bind-Value="SelectedTipoId" @onchange="@(async _ => await GetDisponibles())">
-                                <option value="0">-- Seleccione un tipo --</option>
-                                @if (listaTipos != null)
-                                {
-                                    @foreach (var t in listaTipos)
-                                    {
-                                        <option value="@t.ID">@t.Nombre</option>
-                                    }
-                                }
-                            </InputSelect>
 
                             <label class="form-label">Escoja Unidad</label>
                             <InputSelect class="form-select mb-2" @bind-Value="detalleSeleccionado.ID_Unidad">
@@ -111,7 +100,7 @@
                                 
                                 @foreach (var ruta in Rutas)
                                 {
-                                    <option value="@ruta.ID">Nombre:@ruta.Nombre; colonias Ayuda:@(string.Join(", ",ruta.CoberturaColonias.ToList()))</option>
+                                    <option value="@ruta.ID">Nombre:@ruta.Nombre; colonias Ayuda:@(string.Join(", ",ruta.CoberturaColonias.Select(c => c.Colonia!.Nombre).ToList()))</option>
                                 }
                             </InputSelect>
                         </div>
@@ -255,6 +244,9 @@
     protected override async Task OnInitializedAsync()
     {
         listaDetalles = (await detalleDiarioService.GetFolios()) ?? new();
+        EmpleadosDisponibles = await empleadoService.GetEmpleados() ?? new();
+        await GetRutas();
+        StateHasChanged();
     }
     public async Task GetDisponibles()
     {
@@ -294,7 +286,7 @@
             EmpleadosUsar.Insert(args.NewIndex, itemToMove);
         else
             EmpleadosUsar.Add(itemToMove);
-        
+
         detalleSeleccionado.Empleados = EmpleadosUsar;
     }
     private void OnEmpleadosDRemove(SortableListEventArgs args)
@@ -331,9 +323,7 @@
         listaTipos = await TipoUnidadService.GetTipos() ?? new();
         // reset selections to avoid null references
         SelectedTipoId = 0;
-        listaUnidadesDisponibles = new List<Unidad>();
-        EmpleadosDisponibles = new List<Empleado>();
-        EmpleadosUsar = new List<Empleado>();
+         await GetDisponibles();
         StateHasChanged();     
         await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
         await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!

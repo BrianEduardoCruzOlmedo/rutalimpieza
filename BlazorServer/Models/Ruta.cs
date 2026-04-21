@@ -1,19 +1,22 @@
 ﻿﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BlazorServer.Models
 {
     public class RutaDetalleColonia
     {
+
         public int ID_Ruta { get; set; }
 
+        [JsonIgnore]
         public Ruta? Ruta { get; set; }
 
         public int ID_Colonia { get; set; }
-
+        [JsonIgnore]
         public Colonia? Colonia { get; set; }
+        public int PorcentajeAtendidos { get; set; }
 
-        public int HabitantesAtendidos { get; set; }
     }
     public class Ruta
     {

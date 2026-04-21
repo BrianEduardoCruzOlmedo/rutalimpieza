@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ApiAspnet.Migrations
 {
     /// <inheritdoc />
@@ -59,7 +61,7 @@ namespace ApiAspnet.Migrations
                 {
                     ID_Ruta = table.Column<int>(type: "INTEGER", nullable: false),
                     ID_Colonia = table.Column<int>(type: "INTEGER", nullable: false),
-                    HabitantesAtendidos = table.Column<int>(type: "INTEGER", nullable: false)
+                    PorcentajeAtendidos = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -156,6 +158,33 @@ namespace ApiAspnet.Migrations
                         column: x => x.DetalleDiarioID,
                         principalTable: "Folios",
                         principalColumn: "ID");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Tipos_Unidades",
+                columns: new[] { "ID", "LtrsDieselTanque", "Nombre" },
+                values: new object[,]
+                {
+                    { 1, 0m, "volteo" },
+                    { 2, 0m, "redilas 12 de marzo" },
+                    { 3, 0m, "compactadores trisa" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Unidades",
+                columns: new[] { "Id", "ID_TipoUnidad", "Nombre" },
+                values: new object[,]
+                {
+                    { 1, 1, "1" },
+                    { 2, 1, "2" },
+                    { 3, 1, "3" },
+                    { 4, 2, "4" },
+                    { 5, 2, "5" },
+                    { 6, 2, "6" },
+                    { 7, 2, "7" },
+                    { 8, 3, "8" },
+                    { 9, 3, "9" },
+                    { 10, 3, "10" }
                 });
 
             migrationBuilder.CreateIndex(

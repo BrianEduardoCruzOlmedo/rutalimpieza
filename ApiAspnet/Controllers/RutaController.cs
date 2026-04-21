@@ -14,14 +14,35 @@ namespace ApiAspnet.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ruta>>> Get()
-            => await _context.Rutas.Include(r => r.CoberturaColonias).ToListAsync();
+        {
+            try
+            {
+                return await _context.Rutas.Include(r => r.CoberturaColonias).ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost]
         public async Task<ActionResult<Ruta>> Create(Ruta ruta)
         {
-            _context.Rutas.Add(ruta);
-            await _context.SaveChangesAsync();
-            return Ok(ruta);
+            try
+            {
+
+                _context.Rutas.Add(ruta);
+
+
+                await _context.SaveChangesAsync();
+                return Ok(ruta);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest();
+            }
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Ruta tipo)

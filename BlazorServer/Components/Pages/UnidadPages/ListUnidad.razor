@@ -119,13 +119,13 @@
     protected override async Task OnInitializedAsync()
     {
         listaUnidades = await UnidadService.GetUnidades() ?? new();
+        listaTipos = await TipoUnidadService.GetTipos() ?? new();
     }
 
     public async Task AbrirModalCrear()
     {
         unidadSeleccionado = new Unidad();
         // cargar tipos para el select
-        listaTipos = await TipoUnidadService.GetTipos() ?? new();
         StateHasChanged();
         await Task.Delay(30);
         await modal_Create.ShowAsync();

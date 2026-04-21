@@ -1,0 +1,396 @@
+﻿@page "/listRutas"
+@using BlazorServer.Models
+@inject RutaService rutaService
+@inject ColoniaService coloniaService
+
+<h3>Gestión de Rutas</h3>
+
+<TablaCrudGenerica TItem="Ruta"
+    Items="lista_Rutas"
+    OnCreate="@AbrirModalCrear"
+    OnEdit="@AbrirModalEditar"
+    OnView="@AbrirModalVer"
+    OnDelete="@AbrirModalEliminar">
+
+    <Cabecera>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>KM Estimados</th>
+        <th>Colonias que Cubre</th>
+    </Cabecera>
+    <Filas Context="Ruta">
+        <td>@Ruta.ID</td>
+        <td>@Ruta.Nombre</td>
+        <td>@Ruta.KM_Estimados</td>
+        <td>@(Ruta.CoberturaColonias.Any() ? string.Join(", ", Ruta.CoberturaColonias.Select(c => c.Colonia!.Nombre)) : "Ninguna")</td>
+    </Filas>
+</TablaCrudGenerica>
+
+<Modal @ref="modal_Create" title="Registrar Nueva Ruta" Size="ModalSize.Large" ModalType="ModalType.Success">
+    <BodyTemplate>
+        <div class="row">
+            <div class="col-md-6 border-end">
+                <h6 class="text-primary border-bottom pb-2">Datos de Ruta</h6>
+                <EditForm Model="rutaSelecionado">
+                       
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        <InputText class="form-control" @bind-Value="rutaSelecionado.Nombre" />
+                    </div>
+                    <div>
+                        <label class="form-label"> KM Estimados:</label>
+                        <InputNumber class="form-control" @bind-Value="rutaSelecionado.KM_Estimados" />
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Colonias
+                            <SortableList TItem="ColoniaHabitanteViewModel"
+                                            Group="SharedList1"
+                                            Name="colList1"
+                                            Data="lista_Colonia"
+                                            Context="item"
+                                            OnUpdate="OnColoniasUpdate"
+                                            OnRemove="OnColoniasRemove">
+                                <ItemTemplate>
+                                    @item.Colonia.Nombre
+                                </ItemTemplate>
+                            </SortableList>
+                        </div>
+                        <div class="col">
+                            Colonias a Usar
+                            <SortableList TItem="ColoniaHabitanteViewModel"
+                                            Group="SharedList1"
+                                            Name="colList2"
+                                            Data="listaColoniaUsar"
+                                            Context="item"
+                                            OnUpdate="OnColoniasUUpdate"
+                                            OnRemove="OnColoniasURemove">
+                                <ItemTemplate>
+                                    @item.Colonia.Nombre
+                                </ItemTemplate>
+                            </SortableList>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        @foreach (var c in listaColoniaUsar)
+                        {
+                            <p>@c.Colonia.Nombre de  @c.Colonia.Habitantes</p>
+                            <InputNumber class="form-control" @bind-Value="c.Porcentaje" @bind-Value:after="() => { c.Porcentaje = Math.Min(100, Math.Max(0, c.Porcentaje)); }" DisplayName="Seleccione un % de habitantes" min="0" max="100" />
+                        }
+                    </div>
+                    
+                </EditForm>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => modal_Create.HideAsync()">Cancelar</Button>
+        <Button Color="ButtonColor.Primary" @onclick="GuardarCrear">Guardar</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal_Update" title="@($"Editar Ruta #{rutaSelecionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Warning">
+    <BodyTemplate>
+        <div class="row">
+            <div class="col-md-6 border-end">
+                <h6 class="text-primary border-bottom pb-2">Datos de Ruta</h6>
+                <EditForm Model="rutaSelecionado">
+                        
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        <InputText class="form-control" @bind-Value="rutaSelecionado.Nombre" />
+                    </div>
+                    <div>
+                        <label class="form-label"> KM Estimados:</label>
+                        <InputNumber class="form-control" @bind-Value="rutaSelecionado.KM_Estimados" />
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Colonias
+                            <SortableList TItem="ColoniaHabitanteViewModel"
+                                          Group="SharedList1"
+                                          Name="colList1"
+                                          Data="lista_Colonia"
+                                          Context="item"
+                                          OnUpdate="OnColoniasUpdate"
+                                          OnRemove="OnColoniasRemove">
+                                <ItemTemplate>
+                                    @item.Colonia.Nombre
+                                </ItemTemplate>
+                            </SortableList>
+                        </div>
+                        <div class="col">
+                            Colonias a Usar
+                            <SortableList TItem="ColoniaHabitanteViewModel"
+                                          Group="SharedList1"
+                                          Name="colList2"
+                                          Data="listaColoniaUsar"
+                                          Context="item"
+                                          OnUpdate="OnColoniasUUpdate"
+                                          OnRemove="OnColoniasURemove">
+                                <ItemTemplate>
+                                    @item.Colonia.Nombre
+                                </ItemTemplate>
+                            </SortableList>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        @foreach (var c in listaColoniaUsar)
+                        {
+                            <p>@c.Colonia.Nombre</p>
+                            <InputNumber class="form-control" @bind-Value="c.Porcentaje" />
+                        }
+                    </div>
+                    
+                </EditForm>
+            </div>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => modal_Update.HideAsync()">Cancelar</Button>
+        <Button Color="ButtonColor.Primary" @onclick="GuardarEditar">Guardar</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal_Read" title="@($"Detalles de la Ruta #{rutaSelecionado.ID}")" Size="ModalSize.Large" ModalType="ModalType.Info">
+    <BodyTemplate>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>ID:</strong> @rutaSelecionado.ID</li>
+            <li class="list-group-item"><strong>Nombre:</strong> @rutaSelecionado.Nombre</li>
+            <li class="list-group-item"><strong>Colonias que cubre:</strong> @rutaSelecionado.CoberturaColonias.Count()</li>
+                
+        </ul>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Primary" @onclick="() => modal_Read.HideAsync()">Cerrar</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="modal_Delete" title="¡Advertencia!" ModalType="ModalType.Danger">
+    <BodyTemplate>
+        <p class="text-danger">¿Estás seguro que deseas eliminar la <strong> #@rutaSelecionado.Nombre</strong>?</p>
+        <p>Se borrará todo los datos de la ruta.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => modal_Delete.HideAsync()">Cancelar</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmarEliminar">Sí, Eliminar Registro</Button>
+    </FooterTemplate>
+</Modal>
+
+
+@code {
+
+    private Modal modal_Create = new Modal();
+    private Modal modal_Read = new Modal();
+    private Modal modal_Update = new Modal();
+    private Modal modal_Delete = new Modal();
+
+    private List<ColoniaHabitanteViewModel> lista_Colonia = new();
+    private List<ColoniaHabitanteViewModel> listaColoniaUsar = new();
+    private List<Ruta> lista_Rutas = new();
+    private Ruta rutaSelecionado = new();
+    public Dictionary<int, int> NumeroHabitantesTotal { get; set; } = new();
+    public class ColoniaHabitanteViewModel
+    {
+        public Colonia Colonia { get; set; }
+        public int Porcentaje { get; set; }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        lista_Colonia = (await coloniaService.GetColonias() ?? new()).Select(c => new ColoniaHabitanteViewModel { Colonia = c, Porcentaje = 0 }).ToList();
+        var rutas = await rutaService.GetRutas() ?? new();
+        rutas.ForEach(options =>
+        {
+            options.CoberturaColonias = options.CoberturaColonias.Select(c => {
+                var colonia = lista_Colonia.FirstOrDefault(l => l.Colonia.ID == c.ID_Colonia)?.Colonia;
+                c.Colonia = new Colonia()
+                {
+                    ID = colonia.ID,
+                    Nombre = colonia.Nombre,
+                    Habitantes = colonia.Habitantes
+                };
+
+                return c; 
+            }).ToList();
+        });
+        lista_Rutas = rutas;
+    }
+    public List<RutaDetalleColonia> rutaDetalleColonias => listaColoniaUsar.Select(c => new RutaDetalleColonia
+    {
+        ID_Ruta = rutaSelecionado.ID,
+        Ruta = rutaSelecionado,
+        Colonia = c.Colonia,
+        ID_Colonia = c.Colonia.ID,
+        PorcentajeAtendidos = c.Porcentaje
+    }).ToList();
+
+    public async Task AbrirModalCrear()
+    {
+        rutaSelecionado = new();
+        StateHasChanged();
+        await Task.Delay(50);  // 2. C# hace una pausa de 50 milisegundos para dejar que se dibuje el HTML
+        await modal_Create.ShowAsync(); // 3. ¡Ahora sí, ábrela!
+    }
+
+    public async Task AbrirModalEditar(Ruta ruta)
+    {
+        rutaSelecionado = ruta;
+        foreach (var col in ruta.CoberturaColonias)
+        {
+            var colr = lista_Colonia.FirstOrDefault(l=>l.Colonia.ID == col.ID_Colonia) ?? new();
+            listaColoniaUsar.Add(colr);
+            lista_Colonia.Remove(colr);
+
+        }
+        StateHasChanged();
+        await Task.Delay(50);
+        await modal_Update.ShowAsync();
+    }
+
+    public async Task AbrirModalVer(Ruta ruta)
+    {
+        rutaSelecionado = ruta;
+        foreach (var col in ruta.CoberturaColonias)
+        {
+            var colr = new ColoniaHabitanteViewModel()
+            {
+                Colonia = col.Colonia,
+                Porcentaje = col.PorcentajeAtendidos
+            };
+            listaColoniaUsar.Add(colr);
+            lista_Colonia.Remove(colr);
+        }
+        StateHasChanged();
+        await Task.Delay(50);
+        await modal_Read.ShowAsync();
+    }
+
+    public async Task AbrirModalEliminar(Ruta ruta)
+    {
+        rutaSelecionado = ruta;
+        StateHasChanged();
+        await Task.Delay(50);
+        await modal_Delete.ShowAsync();
+    }
+
+
+    public async Task GuardarCrear()
+    {
+        rutaSelecionado.CoberturaColonias = rutaDetalleColonias;
+        await rutaService.Create(rutaSelecionado);
+        await modal_Create.HideAsync();
+        lista_Colonia = (await coloniaService.GetColonias() ?? new()).Select(c => new ColoniaHabitanteViewModel { Colonia = c, Porcentaje = 0 }).ToList();
+
+        var rutas = await rutaService.GetRutas() ?? new();
+        rutas.ForEach(options =>
+        {
+            options.CoberturaColonias = options.CoberturaColonias.Select(c =>
+            {
+                c.Colonia = lista_Colonia.FirstOrDefault(l => l.Colonia.ID == c.ID_Colonia)?.Colonia;
+
+                return c;
+            }).ToList();
+        });
+        lista_Rutas = rutas;
+    }
+
+    public async Task GuardarEditar()
+    {
+        lista_Colonia = (await coloniaService.GetColonias() ?? new()).Select(c => new ColoniaHabitanteViewModel { Colonia = c, Porcentaje = 0 }).ToList();
+
+        rutaSelecionado.CoberturaColonias = rutaDetalleColonias;
+        await rutaService.Update(rutaSelecionado!.ID, rutaSelecionado);
+        await modal_Update.HideAsync();
+        var rutas = await rutaService.GetRutas() ?? new();
+        rutas.ForEach(options =>
+        {
+            options.CoberturaColonias = options.CoberturaColonias.Select(c =>
+            {
+                c.Colonia = lista_Colonia.FirstOrDefault(l => l.Colonia.ID == c.ID_Colonia)?.Colonia;
+
+                return c;
+            }).ToList();
+        });
+        lista_Rutas = rutas;
+    }
+
+    public async Task ConfirmarEliminar()
+    {
+        lista_Colonia = (await coloniaService.GetColonias() ?? new()).Select(c => new ColoniaHabitanteViewModel { Colonia = c, Porcentaje = 0 }).ToList();
+
+        await rutaService.Delete(rutaSelecionado!.ID);
+        await modal_Delete.HideAsync();
+        var rutas = await rutaService.GetRutas() ?? new();
+        rutas.ForEach(options =>
+        {
+            options.CoberturaColonias = options.CoberturaColonias.Select(c =>
+            {
+                c.Colonia = lista_Colonia.FirstOrDefault(l => l.Colonia.ID == c.ID_Colonia)?.Colonia;
+
+                return c;
+            }).ToList();
+        });
+        lista_Rutas = rutas;
+    }
+    private void OnColoniasUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = lista_Colonia[args.OldIndex];
+
+        lista_Colonia.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < lista_Colonia.Count)
+            lista_Colonia.Insert(args.NewIndex, itemToMove);
+        else
+            lista_Colonia.Add(itemToMove);
+    }
+
+    private void OnColoniasUUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = listaColoniaUsar[args.OldIndex];
+
+        listaColoniaUsar.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < listaColoniaUsar.Count)
+            listaColoniaUsar.Insert(args.NewIndex, itemToMove);
+        else
+            listaColoniaUsar.Add(itemToMove);
+        
+        rutaSelecionado.CoberturaColonias = rutaDetalleColonias;
+    }
+    private void OnColoniasRemove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 1
+        var item = lista_Colonia[args.OldIndex];
+
+        // add it to the new index in list 2
+        listaColoniaUsar.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 1
+        lista_Colonia.Remove(lista_Colonia[args.OldIndex]);
+    }
+    public int this[int coloniaId]
+    {
+        get
+        {
+            // If the key doesn't exist, return 0 (or default value)
+            return NumeroHabitantesTotal.ContainsKey(coloniaId) ? NumeroHabitantesTotal[coloniaId] : 0;
+        }
+        set
+        {
+            // Update or add the value
+            NumeroHabitantesTotal[coloniaId] = value;
+        }
+    }
+
+    private void OnColoniasURemove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 2
+        var item = listaColoniaUsar[args.OldIndex];
+
+        // add it to the new index in list 1
+        lista_Colonia.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 2
+        listaColoniaUsar.Remove(listaColoniaUsar[args.OldIndex]);
+    }
+}

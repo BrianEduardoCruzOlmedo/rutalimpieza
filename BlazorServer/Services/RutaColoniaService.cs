@@ -12,7 +12,18 @@ namespace BlazorServer.Services
         public async Task<List<Ruta>?> GetRutas()
             => await _http.GetFromJsonAsync<List<Ruta>>("api/Ruta");
 
-        public async Task Create(Ruta ruta) => await _http.PostAsJsonAsync("api/Ruta", ruta);
+        public async Task Create(Ruta ruta) {
+            try
+            {
+                await _http.PostAsJsonAsync("api/Ruta", ruta);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating Ruta: {ex.Message}");
+            }
+
+        }
 
         public async Task Update(int id, Ruta ruta) => await _http.PutAsJsonAsync($"api/Ruta/{id}", ruta);
 

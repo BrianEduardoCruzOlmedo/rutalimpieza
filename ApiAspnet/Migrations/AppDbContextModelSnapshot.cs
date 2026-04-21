@@ -147,7 +147,7 @@ namespace ApiAspnet.Migrations
                     b.Property<int>("ID_Colonia")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HabitantesAtendidos")
+                    b.Property<int>("PorcentajeAtendidos")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID_Ruta", "ID_Colonia");
@@ -173,6 +173,26 @@ namespace ApiAspnet.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Tipos_Unidades");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            LtrsDieselTanque = 0m,
+                            Nombre = "volteo"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            LtrsDieselTanque = 0m,
+                            Nombre = "redilas 12 de marzo"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            LtrsDieselTanque = 0m,
+                            Nombre = "compactadores trisa"
+                        });
                 });
 
             modelBuilder.Entity("ApiAspnet.Models.Unidad", b =>
@@ -193,6 +213,68 @@ namespace ApiAspnet.Migrations
                     b.HasIndex("ID_TipoUnidad");
 
                     b.ToTable("Unidades");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ID_TipoUnidad = 1,
+                            Nombre = "1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ID_TipoUnidad = 1,
+                            Nombre = "2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ID_TipoUnidad = 1,
+                            Nombre = "3"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ID_TipoUnidad = 2,
+                            Nombre = "4"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ID_TipoUnidad = 2,
+                            Nombre = "5"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ID_TipoUnidad = 2,
+                            Nombre = "6"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ID_TipoUnidad = 2,
+                            Nombre = "7"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ID_TipoUnidad = 3,
+                            Nombre = "8"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ID_TipoUnidad = 3,
+                            Nombre = "9"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ID_TipoUnidad = 3,
+                            Nombre = "10"
+                        });
                 });
 
             modelBuilder.Entity("ApiAspnet.Models.DetalleDiario", b =>
